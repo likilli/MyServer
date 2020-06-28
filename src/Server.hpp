@@ -9,6 +9,8 @@ public:
     void Init();
     void Close() const;
 
+    static void AcceptHandle();
+
 public:
 
     Server();

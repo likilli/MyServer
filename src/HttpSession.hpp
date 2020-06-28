@@ -27,7 +27,7 @@ public:
 
 private:
 
-    std::map<std::string, std::string> http_headers_{}
+    std::map<std::string, std::string> http_headers_{};
 
 };
 

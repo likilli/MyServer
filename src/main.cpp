@@ -1,14 +1,13 @@
 #include <iostream>
 
+#include "Server.hpp"
+
 int main()
 {
     std::cout << "hello world" << std::endl;
 
-    bool arr[10]{};
-
-    for (bool &i : arr)
-        std::cout << i << ' ';
-    std::cout << std::endl;
+    Server s;
+    s.Init();
 
     return 0;
 }

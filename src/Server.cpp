@@ -43,7 +43,7 @@ void Server::Init()
     struct sockaddr_in srv_addr{};
     srv_addr.sin_family = AF_INET;
     srv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-    srv_addr.sin_port = htons(80);
+    srv_addr.sin_port = htons(8080);
 
     if (bind(fd_, (struct sockaddr*)&srv_addr, sizeof(srv_addr)) != 0)
     {
@@ -57,8 +57,18 @@ void Server::Init()
         Close();
     }
 
+    e_.fd_         = fd_;
+    e_.data_       = this;
+    e_.event_type_ = EVENT_READ;
+    e_.onCallBack_ = AcceptHandle;
 
+    EventStart(e_);
+}
 
+void Server::AcceptHandle()
+{
+    std::cout << __func__  << "  " << __LINE__ << std::endl;
+    exit(1);
 }
 
 void Server::Close() const
