@@ -43,7 +43,7 @@ void Server::Init()
     struct sockaddr_in srv_addr{};
     srv_addr.sin_family = AF_INET;
     srv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-    srv_addr.sin_port = htons(8080);
+    srv_addr.sin_port = htons(625);
 
     if (bind(fd_, (struct sockaddr*)&srv_addr, sizeof(srv_addr)) != 0)
     {

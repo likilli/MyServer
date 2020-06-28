@@ -4,10 +4,11 @@
 
 #include <vector>
 #include <algorithm>
+#include <iostream>
 
 std::vector<event> ev_vec{};
 
-int fd_max;
+int fd_max = 0;
 fd_set rfds{};
 fd_set wfds{};
 
@@ -28,34 +29,51 @@ void EventStart(const event &e)
     else
         FD_SET(fd, &wfds);
 
-
-    struct timeval timeout{};
-    timeout.tv_sec  = 5;
-    timeout.tv_usec = 0;
-
     while (true)
     {
+        struct timeval timeout{};
+        timeout.tv_sec  = 5;
+        timeout.tv_usec = 0;
+
         int select_rc = select(fd_max, &rfds, &wfds, nullptr, &timeout);
         if (select_rc == -1)
             break;
 
         for (const auto &t : ev_vec)
         {
-            if (t.event_type_ == EVENT_READ && FD_ISSET(e.fd_, &rfds))
+
+            if (FD_ISSET(t.fd_, &rfds) || FD_ISSET(t.fd_, &wfds))
             {
-                e.onCallBack_;
+                t.onCallBack_;
+                std::cout << "on callback" << std::endl;
             }
-            if (t.event_type_ == EVENT_WRITE && FD_ISSET(e.fd_, &wfds))
+
+            /*
+            if (t.event_type_ == EVENT_READ && FD_ISSET(t.fd_, &rfds))
             {
-                e.onCallBack_;
+                t.onCallBack_;
             }
+            if (t.event_type_ == EVENT_WRITE && FD_ISSET(t.fd_, &wfds))
+            {
+                t.onCallBack_;
+            }
+            */
         }
 
         for_each(ev_vec.begin(), ev_vec.end(), [](const event &t){
+            FD_CLR(t.fd_, &rfds);
+            FD_CLR(t.fd_, &wfds);
+        });
+
+        for_each(ev_vec.begin(), ev_vec.end(), [](const event &t){
             if (t.event_type_ == EVENT_READ)
+            {
                 FD_SET(t.fd_, &rfds);
+            }
             else
+            {
                 FD_SET(t.fd_, &wfds);
+            }
         });
 
     }
