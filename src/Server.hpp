@@ -9,7 +9,7 @@ public:
     void Init();
     void Close() const;
 
-    static void AcceptHandle();
+    static void AcceptHandle(void *data);
 
 public:
 

@@ -1,16 +1,16 @@
 #pragma once
 
+#include <functional>
+
 constexpr int EVENT_READ  = 0;
 constexpr int EVENT_WRITE = 1;
 
-using OnCallBack = void (*)();
-
 struct event
 {
-    int         fd_{};
-    int         event_type_{};
-    OnCallBack  onCallBack_ = nullptr;
-    void        *data_ = nullptr;
+    int                    fd_{};
+    int                    event_type_{};
+    void                  *data_ = nullptr;
+    std::function<void(void *)>  onCallBack_ = nullptr;
 
     bool operator== (const event &var) const
     {

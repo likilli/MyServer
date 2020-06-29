@@ -10,14 +10,29 @@
 #include <map>
 #include <string>
 
+
 #include "Event.hpp"
 
+enum class Status : int
+{
+    kInit               = 0,
+    kRecvRequest        = 1,
+    kSendResponseHeader = 2,
+    kSendResponseData   = 3
+};
 
 class HttpSession
 {
 public:
 
-    HttpSession();
+    void Close();
+    static void OnReadData(void *data);
+    void setCallBack();
+    event getEvent() const;
+
+public:
+
+    explicit HttpSession(int fd);
     ~HttpSession();
 
     HttpSession(HttpSession&&) = delete;
@@ -27,7 +42,11 @@ public:
 
 private:
 
-    std::map<std::string, std::string> http_headers_{};
+    int     fd_ = -1;
+    event   e_{};
 
+    std::string buffer_{};
+    Status status_{Status::kInit};
+    std::map<std::string, std::string> http_header_{};
 };
 

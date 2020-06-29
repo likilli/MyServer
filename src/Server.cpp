@@ -9,6 +9,7 @@
 #include <iostream>
 
 #include "Server.hpp"
+#include "HttpSession.hpp"
 
 constexpr int kMaxListen = 512;
 
@@ -38,12 +39,10 @@ Server::~Server()
 
 void Server::Init()
 {
-    bool if_bind_ok = false;
-
     struct sockaddr_in srv_addr{};
     srv_addr.sin_family = AF_INET;
     srv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-    srv_addr.sin_port = htons(8000);
+    srv_addr.sin_port = htons(8080);
 
     if (bind(fd_, (struct sockaddr*)&srv_addr, sizeof(srv_addr)) != 0)
     {
@@ -65,10 +64,20 @@ void Server::Init()
     EventStart(e_);
 }
 
-void Server::AcceptHandle()
+void Server::AcceptHandle(void *data)
 {
-    std::cout << __func__  << "  " << __LINE__ << std::endl;
-    exit(1);
+    std::cout << __func__  << std::endl;
+    auto server = static_cast<Server*>(data);
+
+    struct sockaddr_in c_adr{};
+    socklen_t c_adr_len = sizeof(c_adr);
+
+    int cfd = accept(server->fd_, (struct sockaddr*)&c_adr, &c_adr_len);
+    std::cout << inet_ntoa(c_adr.sin_addr) << std::endl;
+
+    auto http_session = new HttpSession(cfd);
+    http_session->setCallBack();
+    EventStart(http_session->getEvent());
 }
 
 void Server::Close() const
