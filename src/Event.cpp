@@ -4,7 +4,6 @@
 
 #include <vector>
 #include <algorithm>
-#include <iostream>
 
 std::vector<event> ev_vec{};
 
@@ -41,23 +40,14 @@ void EventStart(const event &e)
 
         for (const auto &t : ev_vec)
         {
-
-            if (FD_ISSET(t.fd_, &rfds) || FD_ISSET(t.fd_, &wfds))
-            {
-                t.onCallBack_;
-                std::cout << "on callback" << std::endl;
-            }
-
-            /*
             if (t.event_type_ == EVENT_READ && FD_ISSET(t.fd_, &rfds))
             {
-                t.onCallBack_;
+                t.onCallBack_();
             }
             if (t.event_type_ == EVENT_WRITE && FD_ISSET(t.fd_, &wfds))
             {
-                t.onCallBack_;
+                t.onCallBack_();
             }
-            */
         }
 
         for_each(ev_vec.begin(), ev_vec.end(), [](const event &t){
@@ -75,7 +65,6 @@ void EventStart(const event &e)
                 FD_SET(t.fd_, &wfds);
             }
         });
-
     }
 
 }
