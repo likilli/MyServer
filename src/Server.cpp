@@ -56,12 +56,7 @@ void Server::Init()
         Close();
     }
 
-    e_.fd_         = fd_;
-    e_.data_       = this;
-    e_.event_type_ = EVENT_READ;
-    e_.onCallBack_ = AcceptHandle;
-
-    EventStart(e_);
+    EventStart(fd_, EventType::Read, AcceptHandle,this);
 }
 
 void Server::AcceptHandle(void *data)
@@ -76,8 +71,7 @@ void Server::AcceptHandle(void *data)
     std::cout << inet_ntoa(c_adr.sin_addr) << std::endl;
 
     auto http_session = new HttpSession(cfd);
-    http_session->setCallBack();
-    EventStart(http_session->getEvent());
+    EventStart(http_session->getFd(), EventType::Read, HttpSession::OnRead, http_session);
 }
 
 void Server::Close() const

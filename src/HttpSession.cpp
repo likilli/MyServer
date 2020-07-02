@@ -14,10 +14,7 @@
 constexpr int kBufSize = 4096;
 
 HttpSession::HttpSession(const int fd) : fd_(fd)
-{
-    e_.fd_ = fd_;
-    e_.data_ = this;
-}
+{}
 
 HttpSession::~HttpSession()
 {
@@ -31,23 +28,26 @@ HttpSession::~HttpSession()
         http_header_.clear();
 }
 
-void HttpSession::setCallBack()
+int HttpSession::getFd() const
 {
-    e_.event_type_ = EVENT_READ;
-    e_.onCallBack_ = OnReadData;
+    return fd_;
 }
 
-void HttpSession::OnReadData(void *data)
+void HttpSession::OnRead(void *data)
 {
     auto t = static_cast<HttpSession*>(data);
     char buf[kBufSize]{};
     while (true)
     {
         ssize_t read_len = recv(t->fd_, buf, kBufSize - 1, 0);
+        std::cout << buf << std::endl;
+        if (read_len > 0)
+            break;
 
+        /*
         if (read_len == -1)
         {
-            EventStart(t->e_);
+            //EventStart(t->e_);
         }
         if (read_len == 0)
         {
@@ -60,15 +60,12 @@ void HttpSession::OnReadData(void *data)
             std::cout << buf << std::endl;
             t->buffer_ += buf;
         }
+         */
     }
 }
 
-event HttpSession::getEvent() const
-{
-    return e_;
-}
 
-void HttpSession::Close()
+void HttpSession::Close() const
 {
     shutdown(fd_, SHUT_RDWR);
     ::close(fd_);

@@ -25,10 +25,10 @@ class HttpSession
 {
 public:
 
-    void Close();
-    static void OnReadData(void *data);
-    void setCallBack();
-    event getEvent() const;
+    int getFd() const;
+
+    void Close() const;
+    static void OnRead(void *data);
 
 public:
 
@@ -43,7 +43,6 @@ public:
 private:
 
     int     fd_ = -1;
-    event   e_{};
 
     std::string buffer_{};
     Status status_{Status::kInit};

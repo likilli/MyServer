@@ -2,6 +2,8 @@
 
 #include "Core.hpp"
 
-void EventStart(const event &e);
+using CallBack = void (*)(void *);
 
-void EventStop(const event &e);
+void EventStart(int fd, EventType event_type, CallBack call_back, void *data);
+
+void EventStop(int fd, EventType event_type);

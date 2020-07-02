@@ -5,25 +5,45 @@
 #include <vector>
 #include <algorithm>
 
-std::vector<event> ev_vec{};
+using CallBack = void (*)(void *);
+
+struct event
+{
+    int          fd_ = 0;
+    EventType    event_type_{};
+    CallBack     callback_ = nullptr;
+    void        *data_     = nullptr;
+
+    bool operator==(const event &e) const
+    {
+        return e.fd_ == fd_ && e.event_type_ == event_type_;
+    }
+};
 
 int fd_max = 0;
 fd_set rfds{};
 fd_set wfds{};
 
+std::vector<event> ev_vec{};
+
 /**
  *
  * @param e
  */
-void EventStart(const event &e)
+void EventStart(int fd, EventType event_type, CallBack call_back, void *data)
 {
-    const int &fd = e.fd_;
 
-    fd_max = e.fd_ > fd_max ? e.fd_ + 1 : fd_max;
+    fd_max = fd > fd_max ? fd + 1 : fd_max;
+    event e{fd, event_type, call_back, data};
 
-    ev_vec.emplace_back(e);
+    auto iter = std::find(ev_vec.begin(), ev_vec.end(), e);
+    if (iter == ev_vec.end())
+        ev_vec.emplace_back(e);
 
-    if (e.event_type_ == EVENT_READ)
+    FD_CLR(fd, &rfds);
+    FD_CLR(fd, &wfds);
+
+    if (event_type == EventType::Read)
         FD_SET(fd, &rfds);
     else
         FD_SET(fd, &wfds);
@@ -40,13 +60,13 @@ void EventStart(const event &e)
 
         for (const auto &t : ev_vec)
         {
-            if (t.event_type_ == EVENT_READ && FD_ISSET(t.fd_, &rfds))
+            if (t.event_type_ == EventType::Read && FD_ISSET(t.fd_, &rfds))
             {
-                t.onCallBack_(t.data_);
+                t.callback_(t.data_);
             }
-            if (t.event_type_ == EVENT_WRITE && FD_ISSET(t.fd_, &wfds))
+            if (t.event_type_ == EventType::Write && FD_ISSET(t.fd_, &wfds))
             {
-                t.onCallBack_(t.data_);
+                t.callback_(t.data_);
             }
         }
 
@@ -56,7 +76,7 @@ void EventStart(const event &e)
         });
 
         for_each(ev_vec.begin(), ev_vec.end(), [](const event &t){
-            if (t.event_type_ == EVENT_READ)
+            if (t.event_type_ == EventType::Read)
             {
                 FD_SET(t.fd_, &rfds);
             }
@@ -73,21 +93,14 @@ void EventStart(const event &e)
  *
  * @param e
  */
-void EventStop(const event &e)
+void EventStop(int fd, EventType event_type)
 {
-    const int &fd = e.fd_;
+    event e{fd, event_type, nullptr, nullptr};
+    auto iter = std::find(ev_vec.begin(), ev_vec.end(), e);
+    if (iter != ev_vec.end())
+        ev_vec.erase(iter);
 
-    // use std::find replace for-loop
-    for (auto iter = ev_vec.begin(); iter != ev_vec.end(); iter++)
-    {
-        if (*iter == e)
-        {
-            ev_vec.erase(iter);
-            break;
-        }
-    }
-
-    if (e.event_type_ == EVENT_READ)
+    if (event_type == EventType::Read)
         FD_CLR(fd, &rfds);
     else
         FD_CLR(fd, &wfds);

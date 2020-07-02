@@ -23,8 +23,6 @@ public:
 
 private:
 
-    event e_{};
-
     int fd_;
     int port_;
 
