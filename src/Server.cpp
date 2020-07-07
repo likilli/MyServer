@@ -71,7 +71,8 @@ void Server::AcceptHandle(void *data)
     std::cout << inet_ntoa(c_adr.sin_addr) << std::endl;
 
     auto http_session = new HttpSession(cfd);
-    EventStart(http_session->getFd(), EventType::Read, HttpSession::OnRead, http_session);
+    HttpSession::OnRead(http_session);
+    //EventStart(http_session->getFd(), EventType::Read, HttpSession::OnRead, http_session);
 }
 
 void Server::Close() const

@@ -29,6 +29,7 @@ public:
 
     void Close() const;
     static void OnRead(void *data);
+    static void OnWrite(void *data);
 
 public:
 

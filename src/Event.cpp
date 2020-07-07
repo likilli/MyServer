@@ -24,11 +24,16 @@ int fd_max = 0;
 fd_set rfds{};
 fd_set wfds{};
 
+static bool isLoopRunning = false;
+
 std::vector<event> ev_vec{};
 
 /**
  *
- * @param e
+ * @param fd
+ * @param event_type
+ * @param call_back
+ * @param data
  */
 void EventStart(int fd, EventType event_type, CallBack call_back, void *data)
 {
@@ -48,50 +53,14 @@ void EventStart(int fd, EventType event_type, CallBack call_back, void *data)
     else
         FD_SET(fd, &wfds);
 
-    while (true)
-    {
-        struct timeval timeout{};
-        timeout.tv_sec  = 5;
-        timeout.tv_usec = 0;
-
-        int select_rc = select(fd_max, &rfds, &wfds, nullptr, &timeout);
-        if (select_rc == -1)
-            break;
-
-        for (const auto &t : ev_vec)
-        {
-            if (t.event_type_ == EventType::Read && FD_ISSET(t.fd_, &rfds))
-            {
-                t.callback_(t.data_);
-            }
-            if (t.event_type_ == EventType::Write && FD_ISSET(t.fd_, &wfds))
-            {
-                t.callback_(t.data_);
-            }
-        }
-
-        for_each(ev_vec.begin(), ev_vec.end(), [](const event &t){
-            FD_CLR(t.fd_, &rfds);
-            FD_CLR(t.fd_, &wfds);
-        });
-
-        for_each(ev_vec.begin(), ev_vec.end(), [](const event &t){
-            if (t.event_type_ == EventType::Read)
-            {
-                FD_SET(t.fd_, &rfds);
-            }
-            else
-            {
-                FD_SET(t.fd_, &wfds);
-            }
-        });
-    }
-
+    if (!isLoopRunning)
+        EventLoopRun();
 }
 
 /**
  *
- * @param e
+ * @param fd
+ * @param event_type
  */
 void EventStop(int fd, EventType event_type)
 {
@@ -104,4 +73,43 @@ void EventStop(int fd, EventType event_type)
         FD_CLR(fd, &rfds);
     else
         FD_CLR(fd, &wfds);
+}
+
+void EventLoopRun()
+{
+    isLoopRunning = true;
+    while (true)
+    {
+        struct timeval timeout{};
+        timeout.tv_sec  = 0;
+        timeout.tv_usec = 500;
+
+        int select_rc = select(fd_max, &rfds, &wfds, nullptr, &timeout);
+        if (select_rc == -1)
+            break;
+
+        for (const auto &t : ev_vec)
+        {
+            if (FD_ISSET(t.fd_, &rfds) || FD_ISSET(t.fd_, &wfds))
+            {
+                t.callback_(t.data_);
+            }
+        }
+
+        for_each(ev_vec.begin(), ev_vec.end(), [&](const event &t){
+            FD_CLR(t.fd_, &rfds);
+            FD_CLR(t.fd_, &wfds);
+        });
+
+        for_each(ev_vec.begin(), ev_vec.end(), [&](const event &t){
+            if (t.event_type_ == EventType::Read)
+            {
+                FD_SET(t.fd_, &rfds);
+            }
+            else
+            {
+                FD_SET(t.fd_, &wfds);
+            }
+        });
+    }
 }
