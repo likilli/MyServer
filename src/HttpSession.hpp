@@ -46,6 +46,8 @@ private:
     int     fd_ = -1;
 
     std::string buffer_{};
+    ssize_t     sent_len_ = 0;
+
     Status status_{Status::kInit};
     std::map<std::string, std::string> http_header_{};
 };
