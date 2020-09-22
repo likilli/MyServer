@@ -1,8 +1,10 @@
 #pragma once
 
+#include <functional>
+
 #include "Core.hpp"
 
-using CallBack = void (*)(void *);
+using CallBack = std::function<void(void*)>;
 
 void EventStart(int fd, EventType event_type, CallBack call_back, void *data);
 

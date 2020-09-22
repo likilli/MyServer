@@ -5,7 +5,7 @@
 #include <vector>
 #include <algorithm>
 
-using CallBack = void (*)(void *);
+using CallBack = std::function<void(void*)>;
 
 struct event
 {
@@ -39,7 +39,7 @@ void EventStart(int fd, EventType event_type, CallBack call_back, void *data)
 {
 
     fd_max = fd > fd_max ? fd + 1 : fd_max;
-    event e{fd, event_type, call_back, data};
+    event e{fd, event_type, std::move(call_back), data};
 
     auto iter = std::find(ev_vec.begin(), ev_vec.end(), e);
     if (iter == ev_vec.end())
