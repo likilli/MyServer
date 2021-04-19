@@ -8,7 +8,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
 
-add_compile_options(-g -Wall -Wextra)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
+add_compile_options(-Wall -Wextra)
 
 add_subdirectory(src)
-include_directories(src)

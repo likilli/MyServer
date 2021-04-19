@@ -1,11 +1,12 @@
 #include "Event.hpp"
 
 #include <sys/select.h>
-
 #include <vector>
 #include <algorithm>
 
+
 using CallBack = std::function<void(void*)>;
+
 
 struct event
 {
