@@ -5,15 +5,12 @@
 #include <algorithm>
 
 
-using CallBack = std::function<void(void*)>;
-
 
 struct event
 {
     int          fd_ = 0;
     EventType    event_type_{};
     CallBack     callback_ = nullptr;
-    void        *data_     = nullptr;
 
     bool operator==(const event &e) const
     {
@@ -36,11 +33,11 @@ std::vector<event> ev_vec{};
  * @param call_back
  * @param data
  */
-void EventStart(int fd, EventType event_type, CallBack call_back, void *data)
+void EventStart(int fd, EventType event_type, CallBack call_back)
 {
 
     fd_max = fd > fd_max ? fd + 1 : fd_max;
-    event e{fd, event_type, std::move(call_back), data};
+    event e{fd, event_type, std::move(call_back)};
 
     auto iter = std::find(ev_vec.begin(), ev_vec.end(), e);
     if (iter == ev_vec.end())
@@ -65,7 +62,7 @@ void EventStart(int fd, EventType event_type, CallBack call_back, void *data)
  */
 void EventStop(int fd, EventType event_type)
 {
-    event e{fd, event_type, nullptr, nullptr};
+    event e{fd, event_type, nullptr};
     auto iter = std::find(ev_vec.begin(), ev_vec.end(), e);
     if (iter != ev_vec.end())
         ev_vec.erase(iter);
@@ -93,7 +90,7 @@ void EventLoopRun()
         {
             if (FD_ISSET(t.fd_, &rfds) || FD_ISSET(t.fd_, &wfds))
             {
-                t.callback_(t.data_);
+                t.callback_();
             }
         }
 

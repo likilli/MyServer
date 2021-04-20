@@ -1,11 +1,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
-#include <netdb.h>
-
-#include <cstdint>
 #include <fcntl.h>
 #include <unistd.h>
-
 #include <iostream>
 
 #include "Server.hpp"
@@ -56,7 +52,7 @@ void Server::Init()
         Close();
     }
 
-    EventStart(fd_, EventType::Read, AcceptHandle,this);
+    EventStart(fd_, EventType::Read, [this](){ AcceptHandle(this); });
 }
 
 void Server::AcceptHandle(void *data)
@@ -71,7 +67,7 @@ void Server::AcceptHandle(void *data)
     std::cout << inet_ntoa(c_adr.sin_addr) << std::endl;
 
     auto http_session = new HttpSession(cfd);
-    HttpSession::OnRead(http_session);
+    http_session->OnRead();
     //EventStart(http_session->getFd(), EventType::Read, HttpSession::OnRead, http_session);
 }
 

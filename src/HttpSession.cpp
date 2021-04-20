@@ -42,17 +42,15 @@ int HttpSession::getFd() const
     return fd_;
 }
 
-void HttpSession::OnRead(void *data)
+void HttpSession::OnRead()
 {
-    auto t = static_cast<HttpSession*>(data);
-
     char buf[kBufSize]{};
-    ssize_t read_len = recv(t->fd_, buf, kBufSize - 1, 0);
+    ssize_t read_len = recv(fd_, buf, kBufSize - 1, 0);
     if (read_len == -1)
     {
         if (errno == EAGAIN || errno == EWOULDBLOCK)
         {
-            EventStart(t->fd_, EventType::Read, OnRead, t);
+            EventStart(fd_, EventType::Read, [this](){ OnRead(); });
         }
     }
 
@@ -62,29 +60,27 @@ void HttpSession::OnRead(void *data)
 
     std::cout << buffer << std::endl;
 
-    EventStop(t->fd_, EventType::Read);
-    HttpSession::OnWrite(t);
+    EventStop(fd_, EventType::Read);
+    HttpSession::OnWrite();
 }
 
-void HttpSession::OnWrite(void *data)
+void HttpSession::OnWrite()
 {
-    auto t = static_cast<HttpSession*>(data);
-
-    ssize_t send_len = send(t->fd_, http_header + t->sent_len_, strlen(http_header), 0);
+    ssize_t send_len = send(fd_, http_header + sent_len_, strlen(http_header), 0);
     if (send_len == -1)
     {
         if (errno == EWOULDBLOCK || errno == EAGAIN)
         {
-            EventStart(t->fd_, EventType::Write, OnWrite, t);
+            EventStart(fd_, EventType::Write, [this](){OnWrite(); });
         }
     }
-    t->sent_len_ += send_len;
-    if (t->sent_len_ == static_cast<ssize_t>(strlen(http_header)))
+    sent_len_ += send_len;
+    if (sent_len_ == static_cast<ssize_t>(strlen(http_header)))
     {
-        EventStop(t->fd_, EventType::Write);
+        EventStop(fd_, EventType::Write);
         std::cout << "Send Finish" << std::endl;
-        shutdown(t->fd_, SHUT_RDWR);
-        ::close(t->fd_);
+        shutdown(fd_, SHUT_RDWR);
+        ::close(fd_);
         exit(0);
     }
 }

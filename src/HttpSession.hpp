@@ -28,8 +28,8 @@ public:
     int getFd() const;
 
     void Close() const;
-    static void OnRead(void *data);
-    static void OnWrite(void *data);
+    void OnRead();
+    void OnWrite();
 
 public:
 
