@@ -3,6 +3,7 @@
 
 #include <cassert>
 #include <Core.hpp>
+#include <functional>
 
 
 using CallBack = std::function<void()>;

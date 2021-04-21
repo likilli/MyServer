@@ -1,15 +1,11 @@
 #include "EventImpl.hpp"
-#include <functional>
 
-
-using CallBack = std::function<void()>;
 
 // condition implementation
 #if defined(USE_SELECT)
 
 
 #include <sys/select.h>
-#include <functional>
 #include <vector>
 #include <algorithm>
 
