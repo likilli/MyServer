@@ -5,7 +5,6 @@
 #include <algorithm>
 
 
-
 struct event
 {
     int          fd_ = 0;
@@ -18,13 +17,22 @@ struct event
     }
 };
 
+
 int fd_max = 0;
 fd_set rfds{};
 fd_set wfds{};
 
 static bool isLoopRunning = false;
-
 std::vector<event> ev_vec{};
+
+/**
+ *
+ * @param cb
+ */
+void EventInit(CallBack cb)
+{
+
+}
 
 /**
  *
