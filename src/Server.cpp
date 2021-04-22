@@ -7,7 +7,9 @@
 #include "Server.hpp"
 #include "HttpSession.hpp"
 
+
 constexpr int kMaxListen = 512;
+
 
 Server::Server()
 {
@@ -24,6 +26,7 @@ Server::Server()
 
 }
 
+
 Server::~Server()
 {
     if (fd_)
@@ -32,6 +35,7 @@ Server::~Server()
         ::close(fd_);
     }
 }
+
 
 void Server::Init()
 {
@@ -55,6 +59,7 @@ void Server::Init()
     EventStart(fd_, EventType::Read, [this](){ AcceptHandle(this); });
 }
 
+
 void Server::AcceptHandle(void *data)
 {
     std::cout << __func__  << std::endl;
@@ -70,6 +75,7 @@ void Server::AcceptHandle(void *data)
     http_session->OnRead();
     //EventStart(http_session->getFd(), EventType::Read, HttpSession::OnRead, http_session);
 }
+
 
 void Server::Close() const
 {
