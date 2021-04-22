@@ -21,9 +21,51 @@ fd_set wfds{};
 void EventLoopRun()
 {
     isLoopRunning = true;
+    while (true)
+    {
+        struct timeval timeout{};
+        timeout.tv_sec  = 0;
+        timeout.tv_usec = 500;
+
+        int select_rc = select(fd_max, &rfds, &wfds, nullptr, &timeout);
+        if (select_rc == -1)
+            break;
+
+        for (const auto &t : events)
+        {
+            if (FD_ISSET(t.fd_, &rfds) || FD_ISSET(t.fd_, &wfds))
+            {
+                t.callback_();
+            }
+        }
+
+        for_each(events.begin(), events.end(), [&](const Event &t)
+        {
+            FD_CLR(t.fd_, &rfds);
+            FD_CLR(t.fd_, &wfds);
+        });
+
+        for_each(events.begin(), events.end(), [&](const Event &t)
+        {
+            if (t.event_type_ == EventType::Read)
+            {
+                FD_SET(t.fd_, &rfds);
+            }
+            else
+            {
+                FD_SET(t.fd_, &wfds);
+            }
+        });
+    }
 }
 
 
+/**
+ *
+ * @param fd
+ * @param event_type
+ * @param cb
+ */
 void AddEvent(int fd, EventType event_type, CallBack cb)
 {
     assert(cb != nullptr);
@@ -45,10 +87,14 @@ void AddEvent(int fd, EventType event_type, CallBack cb)
 
     if (!isLoopRunning)
         EventLoopRun();
-
 }
 
 
+/**
+ *
+ * @param fd
+ * @param event_type
+ */
 void DelEvent(int fd, EventType event_type)
 {
     Event e{fd, event_type, nullptr};
