@@ -10,6 +10,8 @@ target_sources(core PRIVATE
     ${CORE_SOURCE_DIR}/Socket.hpp
     ${CORE_SOURCE_DIR}/Event.cpp
     ${CORE_SOURCE_DIR}/Event.hpp
+    ${CORE_SOURCE_DIR}/EventImpl.cpp
+    ${CORE_SOURCE_DIR}/EventImpl.hpp
     ${CORE_SOURCE_DIR}/Core.hpp)
 target_include_directories(core PUBLIC ${CORE_SOURCE_DIR})
 

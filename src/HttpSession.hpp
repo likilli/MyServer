@@ -7,11 +7,12 @@
 
 #pragma once
 
+
 #include <map>
 #include <string>
 
-
 #include "Event.hpp"
+
 
 enum class Status : int
 {
@@ -21,10 +22,10 @@ enum class Status : int
     kSendResponseData   = 3
 };
 
+
 class HttpSession
 {
 public:
-
     int getFd() const;
 
     void Close() const;

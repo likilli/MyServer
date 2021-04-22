@@ -12,6 +12,7 @@
 
 #include "HttpSession.hpp"
 
+
 constexpr int kBufSize = 4096;
 
 char http_header[] = "HTTP/1.1 200 OK\r\n"
@@ -22,8 +23,10 @@ char http_header[] = "HTTP/1.1 200 OK\r\n"
              "\r\n"
              "<!DOCTYPE html><html><head> Welcom, Kai</head><h1> aaa, elitk's Home page</h1></html>";
 
+
 HttpSession::HttpSession(const int fd) : fd_(fd)
 {}
+
 
 HttpSession::~HttpSession()
 {
@@ -37,10 +40,12 @@ HttpSession::~HttpSession()
         http_header_.clear();
 }
 
+
 int HttpSession::getFd() const
 {
     return fd_;
 }
+
 
 void HttpSession::OnRead()
 {
@@ -63,6 +68,7 @@ void HttpSession::OnRead()
     EventStop(fd_, EventType::Read);
     HttpSession::OnWrite();
 }
+
 
 void HttpSession::OnWrite()
 {
@@ -91,5 +97,3 @@ void HttpSession::Close() const
     shutdown(fd_, SHUT_RDWR);
     ::close(fd_);
 }
-
-
