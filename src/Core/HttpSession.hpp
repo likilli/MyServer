@@ -11,7 +11,7 @@
 #include <map>
 #include <string>
 
-#include "Event.hpp"
+#include "Socket.hpp"
 
 
 enum class Status : int
@@ -26,14 +26,6 @@ enum class Status : int
 class HttpSession
 {
 public:
-    int getFd() const;
-
-    void Close() const;
-    void OnRead();
-    void OnWrite();
-
-public:
-
     explicit HttpSession(int fd);
     ~HttpSession();
 
@@ -42,12 +34,20 @@ public:
     HttpSession& operator=(HttpSession &&) = delete;
     HttpSession& operator=(const HttpSession&) = delete;
 
+public:
+    void Close();
+    void Read();
+    void Send();
+
 private:
+    void OnRead();
+    void OnSend();
 
-    int     fd_ = -1;
+private:
+    Socket socket_{};
 
-    std::string buffer_{};
-    ssize_t     sent_len_ = 0;
+    std::string recv_buffer_{};
+    std::string send_buffer_{};
 
     Status status_{Status::kInit};
     std::map<std::string, std::string> http_header_{};

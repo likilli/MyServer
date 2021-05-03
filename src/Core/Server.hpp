@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "Event.hpp"
+#include "Socket.hpp"
 
 
 class Server
@@ -24,8 +24,6 @@ public:
     Server& operator=(Server &&) = delete;
 
 private:
-
-    int fd_;
-    int port_;
-
+    Socket fd_{};
+    std::uint32_t  port_{};
 };

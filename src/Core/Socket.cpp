@@ -1,11 +1,22 @@
 #include "Socket.hpp"
+
 #include <unistd.h>
 #include <sys/socket.h>
+#include <fcntl.h>
+
+#include "Event.hpp"
 
 
 Socket::Socket()
 {
     socket_ = socket(PF_INET, SOCK_STREAM, 0);
+    fcntl(socket_, F_SETFL, fcntl(socket_, F_GETFL) | O_NONBLOCK);
+}
+
+
+Socket::Socket(int fd) : socket_(fd)
+{
+    fcntl(socket_, F_SETFL, fcntl(socket_, F_GETFL) | O_NONBLOCK);
 }
 
 
@@ -35,4 +46,19 @@ void Socket::SetSendData(const std::string& data)
 std::string Socket::GetRecvData() const
 {
     return recv_buffer_;
+}
+
+
+void Socket::Send()
+{
+    OnSend();
+}
+
+
+void Socket::OnSend() {
+    uint64_t send_len = ::send(socket_, send_buffer_.c_str() + sent_len_, send_buffer_.length() - sent_len_, 0);
+    if (send_len >= 0)
+        sent_len_ += send_len;
+    else
+        EventStart(socket_, EventType::Write, [this](){ OnSend(); });
 }
