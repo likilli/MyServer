@@ -11,7 +11,9 @@ public:
     void Init();
     void Close() const;
 
+    // todo: Remove static functions
     static void AcceptHandle(void *data);
+    static void SSLAcceptHandle(void *data);
 
 public:
 
@@ -25,5 +27,6 @@ public:
 
 private:
     Socket fd_{};
+    Socket SSL_fd_{};
     std::uint32_t  port_{};
 };
