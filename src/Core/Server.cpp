@@ -30,9 +30,21 @@ void Server::Init()
     struct sockaddr_in srv_addr{};
     srv_addr.sin_family = AF_INET;
     srv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-    srv_addr.sin_port = htons(8081);
 
-    if (bind(fd_.GetFd(), (struct sockaddr*)&srv_addr, sizeof(srv_addr)) != 0)
+    bool ok = false;
+    for (uint32_t i = 8000; i < 8100; i++)
+    {
+        srv_addr.sin_port = htons(i);
+        if (bind(fd_.GetFd(), (struct sockaddr*)&srv_addr, sizeof(srv_addr)) == 0)
+        {
+            port_ = i;
+            ok = true;
+            std::cout << "[LOG]: Server Running on " << port_ << std::endl;
+            break;
+        }
+    }
+
+    if (!ok)
     {
         std::cerr << "fd bind failed !" << std::endl;
         Close();
@@ -50,14 +62,13 @@ void Server::Init()
 
 void Server::AcceptHandle(void *data)
 {
-    std::cout << __func__  << std::endl;
     auto server = static_cast<Server*>(data);
 
     struct sockaddr_in c_adr{};
     socklen_t c_adr_len = sizeof(c_adr);
 
     int cfd = accept(server->fd_.GetFd(), (struct sockaddr*)&c_adr, &c_adr_len);
-    std::cout << inet_ntoa(c_adr.sin_addr) << std::endl;
+    std::cout << "\n[LOG]: Http Request from: " << inet_ntoa(c_adr.sin_addr) << std::endl;
 
     auto http_session = new HttpSession(cfd);
     http_session->Read();

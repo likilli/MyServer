@@ -4,14 +4,15 @@
  *
  */
 
-#include <iostream>
 
 #include <unistd.h>
 #include <sys/socket.h>
+#include <cerrno>
 #include <cstring>
 
 #include "HttpSession.hpp"
 #include "Event.hpp"
+#include "Utils.hpp"
 
 
 constexpr int kBufSize = 4096;
@@ -19,7 +20,7 @@ constexpr int kBufSize = 4096;
 std::string kHeader = "HTTP/1.1 200 OK\r\n"
              "Connection: close\r\n"
              "Content-Type: text/html; charset=UTF-8\r\n"
-             "Content-Length: 92\r\n"
+             "Content-Length: 85\r\n"
              "Server:elitk/Manjaro 20.0 - Lysia\r\n"
              "\r\n"
              "<!DOCTYPE html><html><head> Welcom, Kai</head><h1> aaa, elitk's Home page</h1></html>";
@@ -56,11 +57,17 @@ void HttpSession::OnRead()
         }
     }
 
-    std::string buffer(buf);
-    std::cout << buffer << std::endl;
+    if (read_len > 0)
+        recv_buffer_.append(buf, read_len);
 
-    EventStop(socket_.GetFd(), EventType::Read);
-    Send();
+    if (recv_buffer_.find("\r\n\r\n") != std::string::npos)
+    {
+        http_header_ = Utils::ParseHttpHeaderFrom(recv_buffer_);
+        Utils::Log(0, "Http Header: ");
+        Utils::Log(0, http_header_);
+        EventStop(socket_.GetFd(), EventType::Read);
+        Send();
+    }
 }
 
 void HttpSession::Send()

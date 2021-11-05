@@ -3,6 +3,8 @@ set(UTILITY_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 # library utility
 add_library(utility STATIC "")
 target_sources(utility PRIVATE
+    ${UTILITY_SOURCE_DIR}/Utils.cpp
+    ${UTILITY_SOURCE_DIR}/Utils.hpp
     ${UTILITY_SOURCE_DIR}/Event.cpp
     ${UTILITY_SOURCE_DIR}/Event.hpp
     ${UTILITY_SOURCE_DIR}/EventImpl.cpp
