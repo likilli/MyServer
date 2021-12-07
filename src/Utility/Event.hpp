@@ -2,24 +2,25 @@
 
 
 #include <functional>
-#include "Core.hpp"
+#include "Types.hpp"
 
 
 using CallBack = std::function<void()>;
 
+
 struct Event
 {
-    int          fd_ = 0;
-    EventType    event_type_{};
-    CallBack     callback_ = nullptr;
+    int          fd{-1};
+    int          event_type{};
+    CallBack     callback_{nullptr};
 
     bool operator==(const Event &e) const
     {
-        return e.fd_ == fd_ && e.event_type_ == event_type_;
+        return e.fd == fd && e.event_type == event_type;
     }
 };
 
 
 void EventInit(CallBack callback);
-void EventStart(int fd, EventType event_type, CallBack call_back);
-void EventStop(int fd, EventType event_type);
+void EventStart(int fd, int event_type, CallBack call_back);
+void EventStop(int fd, int event_type);

@@ -9,10 +9,6 @@
 #include "HttpSession.hpp"
 
 
-
-constexpr int kMaxListen = 512;
-
-
 Server::Server()
 {
     port_ = 80;
@@ -50,13 +46,13 @@ void Server::Init()
         Close();
     }
 
-    if (listen(fd_.GetFd(), kMaxListen) != 0)
+    if (listen(fd_.GetFd(), SOMAXCONN) != 0)
     {
         std::cerr << "listen fd failed " << std::endl;
         Close();
     }
 
-    EventStart(fd_.GetFd(), EventType::Read, [this](){ AcceptHandle(this); });
+    EventStart(fd_.GetFd(), READ, [this](){ AcceptHandle(this); });
 }
 
 

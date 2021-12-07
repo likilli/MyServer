@@ -60,5 +60,5 @@ void Socket::OnSend() {
     if (send_len >= 0)
         sent_len_ += send_len;
     else
-        EventStart(socket_, EventType::Write, [this](){ OnSend(); });
+        EventStart(socket_, WRITE, [this](){ OnSend(); });
 }

@@ -16,8 +16,7 @@
 
 
 constexpr int kBufSize = 4096;
-
-std::string kHeader = "HTTP/1.1 200 OK\r\n"
+const std::string kHeader = "HTTP/1.1 200 OK\r\n"
              "Connection: close\r\n"
              "Content-Type: text/html; charset=UTF-8\r\n"
              "Content-Length: 85\r\n"
@@ -53,7 +52,8 @@ void HttpSession::OnRead()
     {
         if (errno == EAGAIN || errno == EWOULDBLOCK)
         {
-            EventStart(socket_.GetFd(), EventType::Read, [this](){ OnRead(); });
+            EventStart(socket_.GetFd(), READ, [this](){ OnRead(); });
+            return;
         }
     }
 
@@ -65,7 +65,7 @@ void HttpSession::OnRead()
         http_header_ = Utils::ParseHttpHeaderFrom(recv_buffer_);
         Utils::Log(0, "Http Header: ");
         Utils::Log(0, http_header_);
-        EventStop(socket_.GetFd(), EventType::Read);
+        EventStop(socket_.GetFd(), READ);
         Send();
     }
 }
