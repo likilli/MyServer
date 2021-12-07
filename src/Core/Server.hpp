@@ -7,8 +7,7 @@
 class Server
 {
 public:
-
-    void Init();
+    void Start();
     void Close() const;
 
     static void AcceptHandle(void *data);

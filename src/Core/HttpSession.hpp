@@ -40,7 +40,7 @@ public:
     void Send();
 
 private:
-    void OnRead();
+    void DoRead();
     void OnSend();
 
 private:

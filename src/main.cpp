@@ -1,14 +1,10 @@
-#include <iostream>
-
 #include "Server.hpp"
 
 
 int main()
 {
-    std::cout << "hello world" << std::endl;
-
     Server s;
-    s.Init();
+    s.Start();
 
     return 0;
 }

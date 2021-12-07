@@ -16,10 +16,11 @@ void Utils::Log(int level, const std::map<std::string, std::string> &v)
 }
 
 
-std::map<std::string, std::string> Utils::ParseHttpHeaderFrom(std::string& buffer)
+void Utils::ParseHttpHeaderFrom(const char* buf, ssize_t buf_len, std::map<std::string, std::string>& http_header)
 {
-    std::map<std::string, std::string> http_header{};
 
+    // todo:
+    /*
     auto iter = buffer.find("\r\n\r\n");
     if (iter != std::string::npos)
     {
@@ -58,4 +59,5 @@ std::map<std::string, std::string> Utils::ParseHttpHeaderFrom(std::string& buffe
         }
     }
     return http_header;
+     */
 }

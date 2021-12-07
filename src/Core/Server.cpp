@@ -11,18 +11,6 @@
 
 Server::Server()
 {
-    port_ = 80;
-}
-
-
-Server::~Server()
-{
-    // todo:
-}
-
-
-void Server::Init()
-{
     struct sockaddr_in srv_addr{};
     srv_addr.sin_family = AF_INET;
     srv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -51,8 +39,18 @@ void Server::Init()
         std::cerr << "listen fd failed " << std::endl;
         Close();
     }
+}
 
-    EventStart(fd_.GetFd(), READ, [this](){ AcceptHandle(this); });
+
+Server::~Server()
+{
+    EventStop(fd_.GetFd(), READ);
+}
+
+
+void Server::Start()
+{
+    EventStart(fd_.GetFd(), READ, [&](){ AcceptHandle(this); });
 }
 
 

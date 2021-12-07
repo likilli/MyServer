@@ -40,11 +40,11 @@ HttpSession::~HttpSession()
 
 void HttpSession::Read()
 {
-    OnRead();
+    DoRead();
 }
 
 
-void HttpSession::OnRead()
+void HttpSession::DoRead()
 {
     char buf[kBufSize]{};
     ssize_t read_len = recv(socket_.GetFd(), buf, kBufSize - 1, 0);
@@ -52,17 +52,18 @@ void HttpSession::OnRead()
     {
         if (errno == EAGAIN || errno == EWOULDBLOCK)
         {
-            EventStart(socket_.GetFd(), READ, [this](){ OnRead(); });
+            EventStart(socket_.GetFd(), READ, [this](){ DoRead(); });
             return;
         }
     }
 
-    if (read_len > 0)
-        recv_buffer_.append(buf, read_len);
+    // todo: use char array
+    if (strstr(buf, "\r\n\r\n"))
+        Utils::ParseHttpHeaderFrom(buf, read_len, http_header_);
 
     if (recv_buffer_.find("\r\n\r\n") != std::string::npos)
     {
-        http_header_ = Utils::ParseHttpHeaderFrom(recv_buffer_);
+        //http_header_ = Utils::ParseHttpHeaderFrom(recv_buffer_);
         Utils::Log(0, "Http Header: ");
         Utils::Log(0, http_header_);
         EventStop(socket_.GetFd(), READ);
