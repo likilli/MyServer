@@ -10,9 +10,9 @@
 #include <cerrno>
 #include <cstring>
 
-#include "HttpSession.hpp"
-#include "Event.hpp"
-#include "Utils.hpp"
+#include "HttpSession.h"
+#include "Event.h"
+#include "Utils.h"
 
 
 constexpr int kBufSize = 4096;
@@ -65,7 +65,6 @@ void HttpSession::DoRead()
     {
         //http_header_ = Utils::ParseHttpHeaderFrom(recv_buffer_);
         Utils::Log(0, "Http Header: ");
-        Utils::Log(0, http_header_);
         EventStop(socket_.GetFd(), READ);
         Send();
     }

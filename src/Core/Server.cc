@@ -4,9 +4,9 @@
 #include <unistd.h>
 #include <iostream>
 
-#include "Event.hpp"
-#include "Server.hpp"
-#include "HttpSession.hpp"
+#include "Event.h"
+#include "Server.h"
+#include "HttpSession.h"
 
 
 Server::Server()

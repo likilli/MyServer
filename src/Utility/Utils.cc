@@ -1,4 +1,4 @@
-#include "Utils.hpp"
+#include "Utils.h"
 
 #include <iostream>
 
@@ -6,13 +6,6 @@
 void Utils::Log(int level, const std::string& info)
 {
     std::cout << "[LOG]: " << info << std::endl;
-}
-
-
-void Utils::Log(int level, const std::map<std::string, std::string> &v)
-{
-    for (const auto &t : v)
-        std::cout << t.first << " : " << t.second << std::endl;
 }
 
 

@@ -1,10 +1,10 @@
-#include "Event.hpp"
+#include "Event.h"
 
 #include <sys/select.h>
 #include <vector>
 #include <algorithm>
 
-#include "EventImpl.hpp"
+#include "EventImpl.h"
 
 
 /**

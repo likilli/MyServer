@@ -1,10 +1,10 @@
-#include "Socket.hpp"
+#include "Socket.h"
 
 #include <unistd.h>
 #include <sys/socket.h>
 #include <fcntl.h>
 
-#include "Event.hpp"
+#include "Event.h"
 
 
 Socket::Socket()
