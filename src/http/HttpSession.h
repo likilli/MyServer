@@ -41,7 +41,7 @@ public:
 
 private:
     void DoRead();
-    void OnSend();
+    void DoSend();
 
 private:
     Socket socket_{};

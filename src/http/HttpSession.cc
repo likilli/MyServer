@@ -15,8 +15,8 @@
 #include "Utils.h"
 
 
-constexpr int kBufSize = 4096;
-const std::string kHeader = "HTTP/1.1 200 OK\r\n"
+constexpr int kBufSize = 8192;
+const char* kHeader = "HTTP/1.1 200 OK\r\n"
              "Connection: close\r\n"
              "Content-Type: text/html; charset=UTF-8\r\n"
              "Content-Length: 85\r\n"
