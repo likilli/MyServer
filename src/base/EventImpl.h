@@ -6,5 +6,5 @@
 #include "Event.h"
 
 
-void AddEvent(int fd, int event_type, CallBack cb);
+void AddEvent(int fd, int event_type, Callback cb);
 void DelEvent(int fd, int event_type);

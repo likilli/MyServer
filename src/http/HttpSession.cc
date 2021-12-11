@@ -52,7 +52,7 @@ void HttpSession::DoRead()
     {
         if (errno == EAGAIN || errno == EWOULDBLOCK)
         {
-            EventStart(socket_.GetFd(), READ, [this](){ DoRead(); });
+            StartRead(socket_.GetFd(), [this](){ DoRead(); });
             return;
         }
     }
@@ -65,7 +65,7 @@ void HttpSession::DoRead()
     {
         //http_header_ = Utils::ParseHttpHeaderFrom(recv_buffer_);
         Utils::Log(0, "Http Header: ");
-        EventStop(socket_.GetFd(), READ);
+        StopRead(socket_.GetFd());
         Send();
     }
 }

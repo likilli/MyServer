@@ -27,7 +27,7 @@ static void EventLoopRun();
  * @param event_type
  * @param cb
  */
-void AddEvent(int fd, int event_type, CallBack cb)
+void AddEvent(int fd, int event_type, Callback cb)
 {
     assert(cb != nullptr);
 

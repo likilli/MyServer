@@ -44,13 +44,15 @@ Server::Server()
 
 Server::~Server()
 {
-    EventStop(fd_.GetFd(), READ);
+    StopRead(fd_.GetFd());
 }
 
 
 void Server::Start()
 {
-    EventStart(fd_.GetFd(), READ, [&](){ AcceptHandle(this); });
+    // TODO: fix here, Function Start is blocking!!!
+    StartRead(fd_.GetFd(), [&](){ AcceptHandle(this); });
+    std::cout << "Start here" << std::endl;
 }
 
 

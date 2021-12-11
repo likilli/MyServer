@@ -1,9 +1,4 @@
 #include "Event.h"
-
-#include <sys/select.h>
-#include <vector>
-#include <algorithm>
-
 #include "EventImpl.h"
 
 
@@ -11,29 +6,30 @@
  *
  * @param cb
  */
-void EventInit(CallBack)
+void EventInit(Callback)
 {
-    return;
 }
 
-/**
- *
- * @param fd
- * @param event_type
- * @param call_back
- * @param data
- */
-void EventStart(int fd, int event_type, CallBack call_back)
+
+void StartRead(int fd, Callback cb)
 {
-    AddEvent(fd, event_type, std::move(call_back));
+    AddEvent(fd, READ, std::move(cb));
 }
 
-/**
- *
- * @param fd
- * @param event_type
- */
-void EventStop(int fd, int event_type)
+
+void StopRead(int fd)
 {
-    DelEvent(fd, event_type);
+    DelEvent(fd, READ);
+}
+
+
+void StartWrite(int fd, Callback cb)
+{
+    AddEvent(fd, WRITE, std::move(cb));
+}
+
+
+void StopWrite(int fd)
+{
+    DelEvent(fd, WRITE);
 }
