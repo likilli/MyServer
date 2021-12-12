@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "Socket.h"
+#include "PosixSocket.h"
 
 
 class Server
@@ -23,6 +23,6 @@ public:
     Server& operator=(Server &&) = delete;
 
 private:
-    Socket fd_{};
+    PosixSocket fd_{};
     std::uint32_t  port_{};
 };

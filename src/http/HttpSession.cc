@@ -47,12 +47,12 @@ void HttpSession::Read()
 void HttpSession::DoRead()
 {
     char buf[kBufSize]{};
-    ssize_t read_len = recv(socket_.GetFd(), buf, kBufSize - 1, 0);
+    ssize_t read_len = recv(socket_.GetSocket(), buf, kBufSize - 1, 0);
     if (read_len == -1)
     {
         if (errno == EAGAIN || errno == EWOULDBLOCK)
         {
-            StartRead(socket_.GetFd(), [this](){ DoRead(); });
+            StartRead(socket_.GetSocket(), [this](){ DoRead(); });
             return;
         }
     }
@@ -65,7 +65,7 @@ void HttpSession::DoRead()
     {
         //http_header_ = Utils::ParseHttpHeaderFrom(recv_buffer_);
         Utils::Log(0, "Http Header: ");
-        StopRead(socket_.GetFd());
+        StopRead(socket_.GetSocket());
         Send();
     }
 }
@@ -79,6 +79,6 @@ void HttpSession::Send()
 
 void HttpSession::Close()
 {
-    shutdown(socket_.GetFd(), SHUT_RDWR);
-    ::close(socket_.GetFd());
+    shutdown(socket_.GetSocket(), SHUT_RDWR);
+    ::close(socket_.GetSocket());
 }

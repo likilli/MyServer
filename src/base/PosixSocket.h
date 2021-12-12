@@ -5,22 +5,20 @@
 #include <functional>
 
 
-#ifndef __WIN32
-#define socket_type int
-#else
-#define socket_type Socket
+#if !defined(__WIN32)
+#define Socket int
 #endif
 
 
-class Socket
+class PosixSocket
 {
 public:
     using OnErrorCallBack = std::function<void(int)>;
 
 public:
-    Socket();
-    explicit Socket(int fd);
-    ~Socket();
+    PosixSocket();
+    explicit PosixSocket(int socket);
+    ~PosixSocket();
 
 public:
     void SetSendData(const char* data, size_t data_size);
@@ -29,7 +27,7 @@ public:
 
     void Send();
 
-    socket_type GetFd() const { return socket_; }
+    Socket GetSocket() const { return socket_; }
 
 public:
     void SetOnErrorCallBack(OnErrorCallBack on_error) { on_error_ = std::move(on_error); }
@@ -42,7 +40,7 @@ private:
 
 private:
 
-   socket_type socket_{};
+   Socket socket_{};
 
    std::string send_buffer_{};
    std::string recv_buffer_{};

@@ -19,7 +19,7 @@ Server::Server()
     for (uint32_t i = 8000; i < 8100; i++)
     {
         srv_addr.sin_port = htons(i);
-        if (bind(fd_.GetFd(), (struct sockaddr*)&srv_addr, sizeof(srv_addr)) == 0)
+        if (bind(fd_.GetSocket(), (struct sockaddr*)&srv_addr, sizeof(srv_addr)) == 0)
         {
             port_ = i;
             ok = true;
@@ -34,7 +34,7 @@ Server::Server()
         Close();
     }
 
-    if (listen(fd_.GetFd(), SOMAXCONN) != 0)
+    if (listen(fd_.GetSocket(), SOMAXCONN) != 0)
     {
         std::cerr << "listen fd failed " << std::endl;
         Close();
@@ -44,14 +44,14 @@ Server::Server()
 
 Server::~Server()
 {
-    StopRead(fd_.GetFd());
+    StopRead(fd_.GetSocket());
 }
 
 
 void Server::Start()
 {
     // TODO: fix here, Function Start is blocking!!!
-    StartRead(fd_.GetFd(), [&](){ AcceptHandle(this); });
+    StartRead(fd_.GetSocket(), [&](){ AcceptHandle(this); });
     std::cout << "Start here" << std::endl;
 }
 
@@ -63,7 +63,7 @@ void Server::AcceptHandle(void *data)
     struct sockaddr_in c_adr{};
     socklen_t c_adr_len = sizeof(c_adr);
 
-    int cfd = accept(server->fd_.GetFd(), (struct sockaddr*)&c_adr, &c_adr_len);
+    int cfd = accept(server->fd_.GetSocket(), (struct sockaddr*)&c_adr, &c_adr_len);
     std::cout << "\n[LOG]: Http Request from: " << inet_ntoa(c_adr.sin_addr) << std::endl;
 
     auto http_session = new HttpSession(cfd);
@@ -73,9 +73,9 @@ void Server::AcceptHandle(void *data)
 
 void Server::Close() const
 {
-    if (fd_.GetFd() > 0)
+    if (fd_.GetSocket() > 0)
     {
-        shutdown(fd_.GetFd(), SHUT_RDWR);
-        ::close(fd_.GetFd());
+        shutdown(fd_.GetSocket(), SHUT_RDWR);
+        ::close(fd_.GetSocket());
     }
 }

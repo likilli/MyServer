@@ -11,7 +11,7 @@
 #include <map>
 #include <string>
 
-#include "Socket.h"
+#include "PosixSocket.h"
 
 
 enum class Status : int
@@ -44,7 +44,7 @@ private:
     void DoSend();
 
 private:
-    Socket socket_{};
+    PosixSocket socket_{};
 
     std::string recv_buffer_{};
     std::string send_buffer_{};
