@@ -1,17 +1,21 @@
 #include <gtest/gtest.h>
-#include <iostream>
 #include "Utils.h"
 
 
-const char* kHttpRequestHeader = "GET / HTTP/1.1\r\n";
+const char* kHTTP11RequestHeader  = "GET / HTTP/1.1\r\n";
+const char* kHTTP11ResponseHeader = "HTTP/1.1 200 OK\r\n";
 
+
+TEST(StringUtilsTest, test0)
+{
+    EXPECT_EQ(StringUtils::StartWith(kHTTP11RequestHeader, "GET"), true);
+    EXPECT_EQ(StringUtils::StartWith(kHTTP11RequestHeader, "HTTP"), false);
+    EXPECT_EQ(StringUtils::StartWith(kHTTP11ResponseHeader, "GET"), false);
+    EXPECT_EQ(StringUtils::StartWith(kHTTP11ResponseHeader, "HTTP"), true);
+}
 
 int main()
 {
-	EXPECT_EQ(StringUtils::StartWith("GET / HTTP/1.1", "GET"), true);
-    EXPECT_EQ(StringUtils::StartWith("GET / HTTP/1.1", "HTTP"), false);
-    EXPECT_EQ(StringUtils::StartWith("HTTP/1.1 200 OK", "GET"), false);
-    EXPECT_EQ(StringUtils::StartWith("HTTP/1.1 200 OK", "HTTP"), true);
-
-	return 0;
+    testing::InitGoogleTest();
+    return RUN_ALL_TESTS();
 }
