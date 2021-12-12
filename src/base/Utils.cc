@@ -1,5 +1,6 @@
 #include "Utils.h"
 
+#include <cstring>
 #include <iostream>
 
 
@@ -9,8 +10,43 @@ void Utils::Log(int level, const std::string& info)
 }
 
 
-void Utils::ParseHttpHeaderFrom(const char* buf, ssize_t buf_len, std::map<std::string, std::string>& http_header)
+bool StringUtils::StartWith(const char* src, const char* needle)
 {
+    if (src == nullptr || needle == nullptr)
+        return false;
+
+    if (strlen(src) < strlen(needle))
+        return false;
+
+    bool ok = true;
+    for (size_t i = 0; i <= strlen(needle); i++)
+    {
+        if (src[i] != needle[i])
+        {
+            ok = false;
+            break;
+        }
+    }
+    return ok;
+}
+
+
+bool HttpUtils::ParseHttpHeaderFrom(const char* buf, ssize_t buf_len, std::map<std::string, std::string>& http_header)
+{
+    if (!strstr(buf, "\r\n\r\n"))
+        return false;
+
+    // Request Header
+    if (StringUtils::StartWith(buf, "GET"))
+    {
+        return true;
+    }
+
+    // Response Header
+    if (StringUtils::StartWith(buf, "HTTP"))
+    {
+        return true;
+    }
 
     // todo:
     /*
