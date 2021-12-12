@@ -18,7 +18,7 @@ option(USE_EPOLL "use epoll" OFF)
 option(USE_LIBEVENT "use libevent" OFF)
 
 if (USE_SELECT)
-    message(STATUS "use select as event implementation")
+    message(STATUS "Using [Select] as Event Implementation")
     add_definitions(-DUSE_SELECT)
 endif ()
 
@@ -31,6 +31,9 @@ if (USE_LIBEVENT)
     message(STATUS "use libevent as event implementation")
     add_definitions(-DUSE_LIBEVENT)
 endif()
+
+
+include(deps/deps.cmake)
 
 
 add_compile_options(-Wall -Wextra)

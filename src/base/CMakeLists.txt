@@ -12,4 +12,4 @@ target_sources(base PRIVATE
 target_include_directories(base PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 add_executable(utils_unittest utils_unittest.cc)
-target_link_libraries(utils_unittest base)
+target_link_libraries(utils_unittest base gtest pthread)

@@ -19,7 +19,7 @@ bool StringUtils::StartWith(const char* src, const char* needle)
         return false;
 
     bool ok = true;
-    for (size_t i = 0; i <= strlen(needle); i++)
+    for (size_t i = 0; i < strlen(needle); i++)
     {
         if (src[i] != needle[i])
         {
