@@ -59,7 +59,7 @@ void HttpSession::DoRead()
 
     // todo: use char array
     if (strstr(buf, "\r\n\r\n"))
-        Utils::ParseHttpHeaderFrom(buf, read_len, http_header_);
+        HttpUtils::ParseHttpHeaderFrom(buf, read_len, http_header_);
 
     if (recv_buffer_.find("\r\n\r\n") != std::string::npos)
     {
