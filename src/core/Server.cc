@@ -30,13 +30,13 @@ Server::Server()
 
     if (!ok)
     {
-        std::cerr << "fd bind failed !" << std::endl;
+        std::cerr << "socket bind failed !" << std::endl;
         Close();
     }
 
     if (listen(socket_.GetSocket(), SOMAXCONN) != 0)
     {
-        std::cerr << "listen fd failed " << std::endl;
+        std::cerr << "listen socket failed " << std::endl;
         Close();
     }
 }

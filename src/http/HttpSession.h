@@ -26,7 +26,7 @@ enum class Status : int
 class HttpSession
 {
 public:
-    explicit HttpSession(int fd);
+    explicit HttpSession(int socket);
     ~HttpSession();
 
     HttpSession(HttpSession&&) = delete;
