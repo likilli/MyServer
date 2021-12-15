@@ -23,6 +23,6 @@ public:
     Server& operator=(Server &&) = delete;
 
 private:
-    PosixSocket fd_{};
+    PosixSocket socket_{};
     std::uint32_t  port_{};
 };

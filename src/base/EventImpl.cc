@@ -79,9 +79,9 @@ static void EventLoopRun()
         for_each(events.begin(), events.end(), [&](const Event &t)
         {
             if (t.event_type == READ)
-                FD_SET(t.fd, &rfds);
+                FD_SET(t.socket, &rfds);
             else
-                FD_SET(t.fd, &wfds);
+                FD_SET(t.socket, &wfds);
         });
 
 
@@ -91,7 +91,7 @@ static void EventLoopRun()
 
         for (const auto &t : events)
         {
-            if (FD_ISSET(t.fd, &rfds) || FD_ISSET(t.fd, &wfds))
+            if (FD_ISSET(t.socket, &rfds) || FD_ISSET(t.socket, &wfds))
             {
                 t.callback_();
             }
