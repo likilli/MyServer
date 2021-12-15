@@ -23,28 +23,28 @@ static void EventLoopRun();
 
 /**
  *
- * @param fd
+ * @param socket
  * @param event_type
  * @param cb
  */
-void AddEvent(int fd, int event_type, Callback cb)
+void AddEvent(int socket, int event_type, Callback cb)
 {
     assert(cb != nullptr);
 
-    Event e{fd, event_type, std::move(cb)};
-    fd_max = fd >= fd_max ? fd + 1 : fd_max;
+    Event e{socket, event_type, std::move(cb)};
+    fd_max = socket >= fd_max ? socket + 1 : fd_max;
 
     auto iter = std::find(events.begin(), events.end(), e);
     if (iter == events.end())
         events.emplace_back(e);
 
-    FD_CLR(fd, &rfds);
-    FD_CLR(fd, &wfds);
+    FD_CLR(socket, &rfds);
+    FD_CLR(socket, &wfds);
 
     if (event_type == READ)
-        FD_SET(fd, &rfds);
+        FD_SET(socket, &rfds);
     else
-        FD_SET(fd, &wfds);
+        FD_SET(socket, &wfds);
 
     if (!isLoopRunning)
         EventLoopRun();
@@ -53,12 +53,12 @@ void AddEvent(int fd, int event_type, Callback cb)
 
 /**
  *
- * @param fd
+ * @param socket
  * @param event_type
  */
-void DelEvent(int fd, int event_type)
+void DelEvent(int socket, int event_type)
 {
-    Event e{fd, event_type, nullptr};
+    Event e{socket, event_type, nullptr};
 
     auto iter = std::find(events.begin(), events.end(), e);
     if (iter != events.end())
@@ -79,9 +79,9 @@ static void EventLoopRun()
         for_each(events.begin(), events.end(), [&](const Event &t)
         {
             if (t.event_type == READ)
-                FD_SET(t.fd, &rfds);
+                FD_SET(t.socket, &rfds);
             else
-                FD_SET(t.fd, &wfds);
+                FD_SET(t.socket, &wfds);
         });
 
 
@@ -91,7 +91,7 @@ static void EventLoopRun()
 
         for (const auto &t : events)
         {
-            if (FD_ISSET(t.fd, &rfds) || FD_ISSET(t.fd, &wfds))
+            if (FD_ISSET(t.socket, &rfds) || FD_ISSET(t.socket, &wfds))
             {
                 t.callback_();
             }

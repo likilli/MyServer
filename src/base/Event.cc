@@ -11,25 +11,25 @@ void EventInit(Callback)
 }
 
 
-void StartRead(int fd, Callback cb)
+void StartRead(int socket, Callback cb)
 {
-    AddEvent(fd, READ, std::move(cb));
+    AddEvent(socket, READ, std::move(cb));
 }
 
 
-void StopRead(int fd)
+void StopRead(int socket)
 {
-    DelEvent(fd, READ);
+    DelEvent(socket, READ);
 }
 
 
-void StartWrite(int fd, Callback cb)
+void StartWrite(int socket, Callback cb)
 {
-    AddEvent(fd, WRITE, std::move(cb));
+    AddEvent(socket, WRITE, std::move(cb));
 }
 
 
-void StopWrite(int fd)
+void StopWrite(int socket)
 {
-    DelEvent(fd, WRITE);
+    DelEvent(socket, WRITE);
 }
