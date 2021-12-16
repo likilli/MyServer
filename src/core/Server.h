@@ -1,19 +1,10 @@
 #pragma once
 
-
-#include "PosixSocket.h"
-
+#include "posix_socket.h"
 
 class Server
 {
 public:
-    void Start();
-    void Close() const;
-
-    static void AcceptHandle(void *data);
-
-public:
-
     Server();
     ~Server();
 
@@ -22,7 +13,14 @@ public:
     Server& operator=(const Server&) = delete;
     Server& operator=(Server &&) = delete;
 
+public:
+    void Start();
+    void Close() const;
+
 private:
-    PosixSocket socket_{};
-    std::uint32_t  port_{};
+    void DoRead();
+
+private:
+    PosixSocket socket_;
+    std::uint32_t port_{};
 };

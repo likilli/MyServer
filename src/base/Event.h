@@ -2,16 +2,15 @@
 
 
 #include <functional>
+#include "posix_socket.h"
 
 
-constexpr int READ = 0;
-constexpr int WRITE = 1;
 using Callback = std::function<void()>;
 
 
 struct Event
 {
-    int          socket{-1};
+    Socket       socket{-1};
     int          event_type{};
     Callback     callback_{nullptr};
 
@@ -21,10 +20,8 @@ struct Event
     }
 };
 
-
-void EventInit(Callback callback);
-
-void StartRead(int socket, Callback cb);
-void StopRead(int socket);
-void StartWrite(int socket, Callback cb);
-void StopWrite(int socket);
+void EventLoopRun();
+void EventInit(Socket socket, int event_type, Callback callback);
+void EventAdd(Socket socket, int event_type, Callback cb);
+void EventDel(Socket socket, int event_type);
+int GetEventQuantity();

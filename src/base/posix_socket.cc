@@ -1,10 +1,15 @@
-#include "PosixSocket.h"
+#include "posix_socket.h"
 
 #include <unistd.h>
 #include <sys/socket.h>
+#include <cerrno>
+#include <utility>
 #include <fcntl.h>
 
-#include "Event.h"
+#include "event.h"
+
+
+constexpr uint32_t kBufSize = 8192;
 
 
 PosixSocket::PosixSocket()
@@ -14,7 +19,7 @@ PosixSocket::PosixSocket()
 }
 
 
-PosixSocket::PosixSocket(int fd) : socket_(fd)
+PosixSocket::PosixSocket(Socket fd) : socket_(fd)
 {
     fcntl(socket_, F_SETFL, fcntl(socket_, F_GETFL) | O_NONBLOCK);
 }
@@ -49,16 +54,25 @@ std::string PosixSocket::GetRecvData() const
 }
 
 
-void PosixSocket::Send()
+void PosixSocket::StartRead(OnReadCallback cb) const
 {
-    OnSend();
+    EventAdd(socket_, READ, std::move(cb));
 }
 
 
-void PosixSocket::OnSend() {
-    uint64_t send_len = ::send(socket_, send_buffer_.c_str() + sent_len_, send_buffer_.length() - sent_len_, 0);
-    if (send_len >= 0)
-        sent_len_ += send_len;
-    else
-        StartWrite(socket_, [this](){ OnSend(); });
+void PosixSocket::StopRead()
+{
+    EventDel(socket_, READ);
+}
+
+
+void PosixSocket::StartSend(OnSendCallback cb) const
+{
+    EventAdd(socket_, WRITE, std::move(cb));
+}
+
+
+void PosixSocket::StopSend()
+{
+    EventDel(socket_, WRITE);
 }

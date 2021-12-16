@@ -11,7 +11,7 @@
 #include <map>
 #include <string>
 
-#include "PosixSocket.h"
+#include "posix_socket.h"
 
 
 enum class Status : int
@@ -26,7 +26,7 @@ enum class Status : int
 class HttpSession
 {
 public:
-    explicit HttpSession(int socket);
+    explicit HttpSession(Socket socket);
     ~HttpSession();
 
     HttpSession(HttpSession&&) = delete;
@@ -35,9 +35,9 @@ public:
     HttpSession& operator=(const HttpSession&) = delete;
 
 public:
-    void Close();
     void Read();
     void Send();
+    void Close();
 
 private:
     void DoRead();

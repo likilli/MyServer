@@ -35,6 +35,6 @@ endif()
 
 include(deps/deps.cmake)
 
-add_compile_options(-Wall -Wextra)
+add_compile_options(-Wall -Wextra -Wreorder)
 
 add_subdirectory(src)

@@ -4,7 +4,6 @@
 #include <unistd.h>
 #include <iostream>
 
-#include "Event.h"
 #include "Server.h"
 #include "HttpSession.h"
 
@@ -44,26 +43,24 @@ Server::Server()
 
 Server::~Server()
 {
-    StopRead(socket_.GetSocket());
+    socket_.StopRead();
 }
 
 
 void Server::Start()
 {
     // TODO: fix here, Function Start is blocking!!!
-    StartRead(socket_.GetSocket(), [&](){ AcceptHandle(this); });
+    socket_.StartRead([this](){ DoRead(); });
     std::cout << "Start here" << std::endl;
 }
 
 
-void Server::AcceptHandle(void *data)
+void Server::DoRead()
 {
-    auto server = static_cast<Server*>(data);
-
     struct sockaddr_in c_adr{};
     socklen_t c_adr_len = sizeof(c_adr);
 
-    int cfd = accept(server->socket_.GetSocket(), (struct sockaddr*)&c_adr, &c_adr_len);
+    int cfd = accept(socket_.GetSocket(), (struct sockaddr*)&c_adr, &c_adr_len);
     std::cout << "\n[LOG]: Http Request from: " << inet_ntoa(c_adr.sin_addr) << std::endl;
 
     auto http_session = new HttpSession(cfd);
