@@ -8,6 +8,7 @@
 #include <sys/select.h>
 #include <vector>
 #include <algorithm>
+#include <cassert>
 
 
 fd_set rfds{};
