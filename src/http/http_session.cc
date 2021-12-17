@@ -10,9 +10,8 @@
 #include <cerrno>
 #include <cstring>
 
-#include "HttpSession.h"
-#include "Event.h"
-#include "Utils.h"
+#include "http_session.h"
+#include "utils.h"
 
 
 constexpr int kBufSize = 8192;
@@ -25,7 +24,7 @@ const char* kHeader = "HTTP/1.1 200 OK\r\n"
              "<!DOCTYPE html><html><head> Welcom, Kai</head><h1> aaa, elitk's Home page</h1></html>";
 
 
-HttpSession::HttpSession(const int socket) : socket_(socket)
+HttpSession::HttpSession(Socket socket) : socket_(socket)
 {
 
 }
@@ -44,6 +43,12 @@ void HttpSession::Read()
 }
 
 
+void HttpSession::Send()
+{
+    socket_.StartSend([this](){ DoSend(); });
+}
+
+
 void HttpSession::DoRead()
 {
     char buf[kBufSize]{};
@@ -52,7 +57,7 @@ void HttpSession::DoRead()
     {
         if (errno == EAGAIN || errno == EWOULDBLOCK)
         {
-            StartRead(socket_.GetSocket(), [this](){ DoRead(); });
+            socket_.StartRead([this](){ DoRead(); });
             return;
         }
     }
@@ -65,16 +70,14 @@ void HttpSession::DoRead()
     {
         //http_header_ = Utils::ParseHttpHeaderFrom(recv_buffer_);
         Utils::Log(0, "Http Header: ");
-        StopRead(socket_.GetSocket());
+        socket_.StopRead();
         Send();
     }
 }
 
-void HttpSession::Send()
-{
-    socket_.SetSendData(kHeader);
-    socket_.Send();
-}
+
+void HttpSession::DoSend()
+{}
 
 
 void HttpSession::Close()

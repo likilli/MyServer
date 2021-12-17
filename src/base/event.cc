@@ -1,4 +1,4 @@
-#include "EventImpl.h"
+#include "event.h"
 
 
 // condition implementation
@@ -18,16 +18,13 @@ std::vector<Event> events{};
 static bool isLoopRunning{false};
 
 
-static void EventLoopRun();
-
-
 /**
  *
  * @param socket
  * @param event_type
  * @param cb
  */
-void AddEvent(int socket, int event_type, Callback cb)
+void EventAdd(int socket, int event_type, Callback cb)
 {
     assert(cb != nullptr);
 
@@ -37,17 +34,6 @@ void AddEvent(int socket, int event_type, Callback cb)
     auto iter = std::find(events.begin(), events.end(), e);
     if (iter == events.end())
         events.emplace_back(e);
-
-    FD_CLR(socket, &rfds);
-    FD_CLR(socket, &wfds);
-
-    if (event_type == READ)
-        FD_SET(socket, &rfds);
-    else
-        FD_SET(socket, &wfds);
-
-    if (!isLoopRunning)
-        EventLoopRun();
 }
 
 
@@ -56,7 +42,7 @@ void AddEvent(int socket, int event_type, Callback cb)
  * @param socket
  * @param event_type
  */
-void DelEvent(int socket, int event_type)
+void EventDel(int socket, int event_type)
 {
     Event e{socket, event_type, nullptr};
 
@@ -66,7 +52,7 @@ void DelEvent(int socket, int event_type)
 }
 
 
-static void EventLoopRun()
+void EventLoopRun()
 {
     isLoopRunning = true;
     while (true)
@@ -99,6 +85,11 @@ static void EventLoopRun()
     }
 }
 
+
+int GetEventQuantity()
+{
+    return static_cast<int>(events.size());
+}
 
 #elif defined(USE_EPOLL)
 

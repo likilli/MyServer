@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "Utils.h"
+#include "utils.h"
 
 
 TEST(StringUtilsTest, test0)
