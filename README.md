@@ -1,10 +1,12 @@
 # MyServer
-`MyServer`是一个基于`C++`的HTTP Server，采用`CMake`进行功能管理，主要用于个人练手，学习网络编程。
 
-暂时只用`select`进行I/O复用，后续
+`MyServer` is a simple HTTP server written by C++, which controled by `CMake`. This project mean to help me understand `NON_BLOCKING Model`. In addition, I can use this project to practice my coding skill.  
 
-* 基于epoll的实现
-* 基于libevent的实现
-* 基于libev的实现
-* 基于libuv的实现
-* Windows平台的支持
+## Doing
+* [x] based by `select`
+
+## Todo
+* [ ] based by `epoll`
+* [ ] based by `libevent`
+* [ ] support `Windows`
+* [ ] enable `file R/W`
