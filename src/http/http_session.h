@@ -35,7 +35,7 @@ public:
     HttpSession& operator=(const HttpSession&) = delete;
 
 public:
-    void Read();
+    void Start();
     void Send();
     void Close();
 
