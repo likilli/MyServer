@@ -86,7 +86,24 @@ void HttpSession::DoRead()
 
 void HttpSession::DoSend()
 {
-
+    ssize_t send_len = send(socket_.GetSocket(), kHeader + sent_len_, strlen(kHeader), 0);
+    if (send_len == -1)
+    {
+        if (errno == EAGAIN || errno == EWOULDBLOCK)
+        {
+            socket_.StartSend([this](){ DoSend(); });
+            return;
+        }
+        else
+        {
+            std::cerr << "[ERROR]: errno: " << errno << " : " << strerror(errno) << std::endl;
+        }
+    }
+    sent_len_ += send_len;
+    if (sent_len_ == strlen(kHeader))
+    {
+        Close();
+    }
 }
 
 

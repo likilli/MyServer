@@ -46,6 +46,7 @@ private:
 private:
     PosixSocket socket_{};
 
+    ssize_t sent_len_{};
     std::string recv_buffer_{};
     std::string send_buffer_{};
 
