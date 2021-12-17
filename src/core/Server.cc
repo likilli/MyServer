@@ -5,6 +5,7 @@
 #include <iostream>
 
 #include "server.h"
+#include "event.h"
 #include "http_session.h"
 
 
@@ -51,6 +52,7 @@ void Server::Start()
 {
     // TODO: fix here, Function Start is blocking!!!
     socket_.StartRead([this](){ DoRead(); });
+    EventLoopRun();
     std::cout << "Start here" << std::endl;
 }
 
@@ -64,7 +66,7 @@ void Server::DoRead()
     std::cout << "\n[LOG]: Http Request from: " << inet_ntoa(c_adr.sin_addr) << std::endl;
 
     auto http_session = new HttpSession(cfd);
-    http_session->Read();
+    http_session->Start();
 }
 
 

@@ -10,6 +10,7 @@
 #include <cerrno>
 #include <cstring>
 
+#include <iostream>
 #include "http_session.h"
 #include "utils.h"
 
@@ -37,7 +38,7 @@ HttpSession::~HttpSession()
 }
 
 
-void HttpSession::Read()
+void HttpSession::Start()
 {
     DoRead();
 }
@@ -60,24 +61,33 @@ void HttpSession::DoRead()
             socket_.StartRead([this](){ DoRead(); });
             return;
         }
+        else
+        {
+            std::cerr << "[ERROR]: receive data error: " << errno << " : " << strerror(errno) << std::endl;
+            Close();
+        }
     }
 
-    // todo: use char array
-    if (strstr(buf, "\r\n\r\n"))
-        HttpUtils::ParseHttpHeaderFrom(buf, read_len, http_header_);
-
-    if (recv_buffer_.find("\r\n\r\n") != std::string::npos)
-    {
-        //http_header_ = Utils::ParseHttpHeaderFrom(recv_buffer_);
-        Utils::Log(0, "Http Header: ");
+    if (read_len == 0)
         socket_.StopRead();
+
+    if (HttpUtils::ParseHttpHeaderFrom(buf, read_len, http_header_))
+    {
+        std::cout << "[LOG]: Request Header: " << std::endl;
+        for (const auto& t : http_header_)
+            std::cout << t.first << " : " << t.second << std::endl;
+
+        status_ = Status::kSendResponseHeader;
         Send();
     }
+
 }
 
 
 void HttpSession::DoSend()
-{}
+{
+
+}
 
 
 void HttpSession::Close()

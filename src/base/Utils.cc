@@ -36,57 +36,83 @@ bool HttpUtils::ParseHttpHeaderFrom(const char* buf, ssize_t buf_len, std::map<s
     if (!strstr(buf, "\r\n\r\n"))
         return false;
 
+    char http_code[10]{};
+    char http_path[500]{};
+    char http_method[10]{};
+    char http_version[10]{};
+    char http_phase[100]{}; // TODO: use correct word
+
     // Request Header
     if (StringUtils::StartWith(buf, "GET"))
     {
-        return true;
+        sscanf(buf, "%s %s HTTP/%s", http_method, http_path, http_version);
+        http_header.insert({"http_method", std::string(http_method)});
+        http_header.insert({"http_path", std::string(http_path)});
+        http_header.insert({"http_version", std::string(http_version)});
     }
 
     // Response Header
     if (StringUtils::StartWith(buf, "HTTP"))
     {
-        return true;
+        sscanf(buf, "HTTP/%s %s %s", http_version, http_code, http_phase);
+        http_header.insert({"http_version", std::string(http_version)});
+        http_header.insert({"http_code", std::string(http_code)});
+        http_header.insert({"http_phase", std::string(http_phase)});
     }
 
-    // todo:
-    /*
-    auto iter = buffer.find("\r\n\r\n");
-    if (iter != std::string::npos)
+    // get first \r address
+    ssize_t addr = 0;
+    for (ssize_t i = 0; i < buf_len; i++)
     {
-        std::string header(buffer, 0, iter + 2);
-        buffer.erase(0, iter + 4);
-
-        std::string item{};
-        std::string key{};
-        std::string value{};
-
-        iter = header.find("\r\n");
-        item.append(header, 0, iter);
-        header.erase(0, iter + 2);
-        // TODO: parse method, path, version
-
-        bool ok = false;
-        for (const auto& c : header)
+        if (buf[i] == '\r')
         {
-            if (c == ' ' || c == '\r') continue;
-            if (c == ':')
-            {
-                ok = true;
-                continue;
-            }
-            if (c == '\n')
-            {
-                ok = false;
-                http_header.insert(std::pair<std::string, std::string>(key, value));
-                key.clear();
-                value.clear();
-                continue;
-            }
-
-            if (ok) value += c;
-            if (!ok) key += c;
+            addr = i;
+            break;
         }
     }
-    return http_header;
-     */
+    addr += 2;
+
+    // get http header end address
+    ssize_t end_addr = 0;
+    for (ssize_t i = addr; i < buf_len - 1; i++)
+    {
+        if (buf[i] == '\n' && buf[i+1] == '\r')
+        {
+            end_addr = i;
+            break;
+        }
+    }
+
+    // parse extra item
+    bool isValue = false;
+    bool first = false;
+    std::string key{};
+    std::string value{};
+
+    for (ssize_t i = addr; i < end_addr; i++)
+    {
+
+        if (!first && buf[i] == ':')
+        {
+            isValue = true;
+            first = true;
+            i+=1;
+            continue;
+        }
+        if (buf[i] == '\r')
+        {
+            http_header.insert({key, value});
+            key.clear();
+            value.clear();
+            isValue = false;
+            first = false;
+            continue;
+        }
+        if (buf[i] == '\n') continue;
+
+        if (!isValue) key += buf[i];
+        if (isValue) value += buf[i];
+    }
+
+    return true;
 }
