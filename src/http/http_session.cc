@@ -68,11 +68,9 @@ void HttpSession::DoRead()
         }
     }
 
-    if (read_len == 0)
-        socket_.StopRead();
-
     if (HttpUtils::ParseHttpHeaderFrom(buf, read_len, http_header_))
     {
+        socket_.StopRead();
         std::cout << "[LOG]: Request Header: " << std::endl;
         for (const auto& t : http_header_)
             std::cout << t.first << " : " << t.second << std::endl;
@@ -102,6 +100,7 @@ void HttpSession::DoSend()
     sent_len_ += send_len;
     if (sent_len_ == strlen(kHeader))
     {
+        socket_.StopSend();
         Close();
     }
 }

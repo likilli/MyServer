@@ -54,23 +54,13 @@ void EventDel(int socket, int event_type)
 
 void EventLoopRun()
 {
+    if (isLoopRunning)
+        return;
+
     isLoopRunning = true;
     while (true)
     {
         struct timeval timeout{0, 1000};
-
-        FD_ZERO(&rfds);
-        FD_ZERO(&wfds);
-
-        for_each(events.begin(), events.end(), [&](const Event &t)
-        {
-            if (t.event_type == READ)
-                FD_SET(t.socket, &rfds);
-            else
-                FD_SET(t.socket, &wfds);
-        });
-
-
         int select_rc = select(fd_max, &rfds, &wfds, nullptr, &timeout);
         if (select_rc == -1)
             break;
@@ -82,6 +72,17 @@ void EventLoopRun()
                 t.callback_();
             }
         }
+
+
+        FD_ZERO(&rfds);
+        FD_ZERO(&wfds);
+        for_each(events.begin(), events.end(), [&](const Event &t)
+        {
+            if (t.event_type == READ)
+                FD_SET(t.socket, &rfds);
+            else
+                FD_SET(t.socket, &wfds);
+        });
     }
 }
 
