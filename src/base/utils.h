@@ -15,7 +15,7 @@ public:
 class HttpUtils
 {
 public:
-    static bool ParseHttpHeaderFrom(const char* buf, ssize_t buf_len, std::map<std::string, std::string>& http_header);
+    static std::map<std::string, std::string> ParseHttpHeaderFrom(const char* buf, ssize_t buf_len);
 };
 
 

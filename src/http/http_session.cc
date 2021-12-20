@@ -68,7 +68,8 @@ void HttpSession::DoRead()
         }
     }
 
-    if (HttpUtils::ParseHttpHeaderFrom(buf, read_len, http_header_))
+    http_header_ = HttpUtils::ParseHttpHeaderFrom(buf, read_len);
+    if (!http_header_.empty())
     {
         socket_.StopRead();
         std::cout << "[LOG]: Request Header: " << std::endl;

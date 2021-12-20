@@ -31,10 +31,12 @@ bool StringUtils::StartWith(const char* src, const char* needle)
 }
 
 
-bool HttpUtils::ParseHttpHeaderFrom(const char* buf, ssize_t buf_len, std::map<std::string, std::string>& http_header)
+std::map<std::string, std::string> HttpUtils::ParseHttpHeaderFrom(const char* buf, ssize_t buf_len)
 {
+    std::map<std::string, std::string> http_header{};
+
     if (!strstr(buf, "\r\n\r\n"))
-        return false;
+        return http_header;
 
     char http_code[10]{};
     char http_path[500]{};
@@ -114,5 +116,5 @@ bool HttpUtils::ParseHttpHeaderFrom(const char* buf, ssize_t buf_len, std::map<s
         if (isValue) value += buf[i];
     }
 
-    return true;
+    return http_header;
 }
