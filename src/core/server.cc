@@ -9,37 +9,7 @@
 #include "http_session.h"
 
 
-Server::Server()
-{
-    struct sockaddr_in srv_addr{};
-    srv_addr.sin_family = AF_INET;
-    srv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-
-    bool ok = false;
-    for (uint32_t i = 8000; i < 8100; i++)
-    {
-        srv_addr.sin_port = htons(i);
-        if (bind(socket_.GetSocket(), (struct sockaddr*)&srv_addr, sizeof(srv_addr)) == 0)
-        {
-            port_ = i;
-            ok = true;
-            std::cout << "[LOG]: Server Running on " << port_ << std::endl;
-            break;
-        }
-    }
-
-    if (!ok)
-    {
-        std::cerr << "socket bind failed !" << std::endl;
-        Close();
-    }
-
-    if (listen(socket_.GetSocket(), SOMAXCONN) != 0)
-    {
-        std::cerr << "listen socket failed " << std::endl;
-        Close();
-    }
-}
+Server::Server() = default;
 
 
 Server::~Server()
@@ -48,12 +18,78 @@ Server::~Server()
 }
 
 
-void Server::Start()
+bool Server::Init()
 {
-    // TODO: fix here, Function Start is blocking!!!
+    struct sockaddr_in srv_addr{};
+    srv_addr.sin_family = AF_INET;
+    srv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+
+    bool bind_ok = false;
+    for (uint32_t i = 8000; i < 8100; i++)
+    {
+        srv_addr.sin_port = htons(i);
+        if (bind(socket_.GetSocket(), (struct sockaddr*)&srv_addr, sizeof(srv_addr)) == 0)
+        {
+            port_ = i;
+            bind_ok = true;
+            std::cout << "[LOG]: Server Running on " << port_ << std::endl;
+            break;
+        }
+    }
+    if (!bind_ok)
+    {
+        std::cerr << "[ERROR] socket bind failed !" << std::endl;
+        return false;
+    }
+
+    if (listen(socket_.GetSocket(), SOMAXCONN) != 0)
+    {
+        std::cerr << "[ERROR] listen socket failed " << std::endl;
+        return false;
+    }
+
+    return true;
+}
+
+
+#if defined(ENABLE_IPV6)
+bool Server::Init6()
+{
+    struct sockaddr_in srv_addr{};
+
+    return true;
+}
+#endif
+
+
+#if defined(ENABLE_SSL)
+bool Server::InitSSL()
+{
+    return true;
+}
+#endif
+
+
+bool Server::Start()
+{
+    if (!Init())
+    {
+        std::cerr << "[ERROR]: Init failed" << std::endl;
+        return false;
+    }
     socket_.StartRead([this](){ DoRead(); });
+
+#if defined(ENABLE_IPV6)
+    v6_socket_.StartRead([this]() { DoRead(); });
+#endif
+
+#if defined(ENABLE_SSL)
+    ssl_socket_.StartRead([this](){ DoRead(); });
+#endif
+
     EventLoopRun();
-    std::cout << "Start here" << std::endl;
+
+    return true;
 }
 
 
