@@ -13,6 +13,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION OFF)
 
+# event options
 option(USE_SELECT "use select" ON)
 option(USE_EPOLL "use epoll" OFF)
 option(USE_LIBEVENT "use libevent" OFF)
@@ -32,7 +33,21 @@ if (USE_LIBEVENT)
     add_definitions(-DUSE_LIBEVENT)
 endif()
 
+# connection options
+option(ENABLE_SSL "enable SSL" OFF)
+option(ENABLE_IPv6 "enable IPv6" OFF)
 
+if (ENABLE_SSL)
+    message(STATUS "Enable [SSL]")
+    add_definitions(-DENABLE_SSL)
+endif()
+
+if (ENABLE_IPv6)
+    message(STATUS "Enable [IPv6]")
+    add_definitions(-DENABLE_IPV6)
+endif()
+
+# other settings
 include(deps/deps.cmake)
 
 add_compile_options(-Wall -Wextra -Wreorder)

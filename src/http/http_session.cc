@@ -98,7 +98,7 @@ void HttpSession::DoSend()
         }
     }
     sent_len_ += send_len;
-    if (sent_len_ == strlen(kHeader))
+    if (sent_len_ == static_cast<ssize_t>(strlen(kHeader)))
     {
         socket_.StopSend();
         Close();
