@@ -4,9 +4,14 @@
 
 ## Doing
 * [x] based by `select`
+* [x] support `gtest`
 
 ## Todo
 * [ ] based by `epoll`
 * [ ] based by `libevent`
-* [ ] support `Windows`
+* [ ] enable `IPv6`
+* [ ] enable `SSL`
 * [ ] enable `file R/W`
+* [ ] support `log print`
+* [ ] support `Windows`
+
