@@ -15,7 +15,7 @@ public:
 
 public:
     void Start();
-    void Close() const;
+    void Close();
 
 private:
     void DoRead();

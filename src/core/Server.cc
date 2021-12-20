@@ -70,10 +70,11 @@ void Server::DoRead()
 }
 
 
-void Server::Close() const
+void Server::Close()
 {
     if (socket_.GetSocket() > 0)
     {
+        socket_.StopRead();
         shutdown(socket_.GetSocket(), SHUT_RDWR);
         ::close(socket_.GetSocket());
     }
