@@ -9,6 +9,10 @@ class StringUtils
 {
 public:
     static bool StartWith(const char* src, const char* needle);
+    static size_t FindCharacterFrom(const char* src, char c);
+    static size_t FindCharacterFrom(const char* src, std::size_t length, char c);
+    static size_t FindCharacterFrom(const char* src, std::size_t start_pos, std::size_t end_pos, char c);
+
 };
 
 
