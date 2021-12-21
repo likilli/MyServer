@@ -53,10 +53,14 @@ void HttpSession::Send()
 void HttpSession::DoRead()
 {
     char buf[kBufSize]{};
-    ssize_t read_len = recv(socket_.GetSocket(), buf, kBufSize - 1, 0);
-    if (read_len == -1)
+    ssize_t recv_len = recv(socket_.GetSocket(), buf, kBufSize - 1, 0);
+    if (recv_len == -1)
     {
+#ifdef __APPLE__
+        if (errno == EAGAIN)
+#elif __linux__
         if (errno == EAGAIN || errno == EWOULDBLOCK)
+#endif
         {
             socket_.StartRead([this](){ DoRead(); });
             return;
@@ -68,7 +72,7 @@ void HttpSession::DoRead()
         }
     }
 
-    http_header_ = HttpUtils::ParseHttpHeaderFrom(buf, read_len);
+    http_header_ = HttpUtils::ParseHttpHeaderFrom(buf, recv_len);
     if (!http_header_.empty())
     {
         socket_.StopRead();
@@ -88,7 +92,11 @@ void HttpSession::DoSend()
     ssize_t send_len = send(socket_.GetSocket(), kHeader + sent_len_, strlen(kHeader), 0);
     if (send_len == -1)
     {
+#ifdef __APPLE__
+        if (errno == EAGAIN)
+#elif __linux__
         if (errno == EAGAIN || errno == EWOULDBLOCK)
+#endif
         {
             socket_.StartSend([this](){ DoSend(); });
             return;
