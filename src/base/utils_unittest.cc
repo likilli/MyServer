@@ -27,7 +27,7 @@ TEST(HttpRequestHeaderParseTest, test1)
         {"Accept-Encoding", "gzip"},
         {"Connection",      "close"},
         {"DNT",             "1"},
-        {"Host", "127.0.0.1:8000"},
+        {"Host",            "127.0.0.1:8000"},
         {"User-Agent",      "Likai"},
         {"http_method",     "GET"},
         {"http_version",    "1.1"},

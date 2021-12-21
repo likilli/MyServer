@@ -4,6 +4,9 @@
 #include <iostream>
 
 
+const char CRLF[] = "\r\n\r\n";
+
+
 void Utils::Log(int level, const std::string& info)
 {
     std::cout << "[LOG]: " << info << std::endl;
@@ -31,15 +34,45 @@ bool StringUtils::StartWith(const char* src, const char* needle)
 }
 
 
+std::size_t StringUtils::FindCharacterFrom(const char *src, const char c)
+{
+    return FindCharacterFrom(src, 0, strlen(src), c);
+}
+
+
+std::size_t StringUtils::FindCharacterFrom(const char *src, const std::size_t length, char c)
+{
+    return FindCharacterFrom(src, 0, length, c);
+}
+
+
+std::size_t StringUtils::FindCharacterFrom(const char *src, std::size_t start_pos, std::size_t end_pos, char c)
+{
+    if (src == nullptr)
+        return -1;
+
+    std::size_t pos = -1;
+    for (size_t i = start_pos; i < end_pos; i++)
+    {
+        if (src[i] == c)
+        {
+            pos = i;
+            break;
+        }
+    }
+    return pos;
+}
+
+
 std::map<std::string, std::string> HttpUtils::ParseHttpHeaderFrom(const char* buf, ssize_t buf_len)
 {
     std::map<std::string, std::string> http_header{};
 
-    if (!strstr(buf, "\r\n\r\n"))
+    if (!strstr(buf, CRLF))
         return http_header;
 
     char http_code[10]{};
-    char http_path[500]{};
+    char http_path[500]{};  // TODO: read RFC and get length limit
     char http_method[10]{};
     char http_version[10]{};
     char http_phase[100]{}; // TODO: use correct word
@@ -63,58 +96,30 @@ std::map<std::string, std::string> HttpUtils::ParseHttpHeaderFrom(const char* bu
     }
 
     // get first \r address
-    ssize_t addr = 0;
-    for (ssize_t i = 0; i < buf_len; i++)
-    {
-        if (buf[i] == '\r')
-        {
-            addr = i;
-            break;
-        }
-    }
+    std::size_t addr = StringUtils::FindCharacterFrom(buf, '\r');
     addr += 2;
 
     // get http header end address
-    ssize_t end_addr = 0;
-    for (ssize_t i = addr; i < buf_len - 1; i++)
+    std::size_t http_header_fin_pos = 0;
+    for (std::size_t i = addr; i < static_cast<std::size_t>(buf_len - 1); i++)
     {
         if (buf[i] == '\n' && buf[i+1] == '\r')
         {
-            end_addr = i;
+            http_header_fin_pos = i;
             break;
         }
     }
 
-    // parse extra item
-    bool isValue = false;
-    bool first = false;
-    std::string key{};
-    std::string value{};
-
-    for (ssize_t i = addr; i < end_addr; i++)
+    while (addr < http_header_fin_pos)
     {
+        size_t colon_pos = StringUtils::FindCharacterFrom(buf, addr, http_header_fin_pos, ':');
+        size_t row_end_pos = StringUtils::FindCharacterFrom(buf, addr, http_header_fin_pos, '\r');
 
-        if (!first && buf[i] == ':')
-        {
-            isValue = true;
-            first = true;
-            i+=1;
-            continue;
-        }
-        if (buf[i] == '\r')
-        {
-            http_header.insert({key, value});
-            key.clear();
-            value.clear();
-            isValue = false;
-            first = false;
-            continue;
-        }
-        if (buf[i] == '\n') continue;
+        std::string key(buf, addr, colon_pos - addr);
+        std::string value(buf, colon_pos + 2, row_end_pos - colon_pos - 2); // exclude colon and space after colon - [: ]
+        http_header.insert({key, value});
 
-        if (!isValue) key += buf[i];
-        if (isValue) value += buf[i];
+        addr = row_end_pos + 2;
     }
-
     return http_header;
 }
