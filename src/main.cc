@@ -4,8 +4,8 @@
 
 int main()
 {
-    Server s;
-    if (!s.Start())
+    Server server;
+    if (!server.Start())
     {
         std::cerr << "Server start failed" << std::endl;
     }
