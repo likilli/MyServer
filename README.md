@@ -7,6 +7,7 @@
 * [x] support `gtest`
 
 ## Todo
+* [ ] `symbol visibility`
 * [ ] based by `epoll`
 * [ ] based by `libevent`
 * [ ] enable `IPv6`
@@ -14,4 +15,3 @@
 * [ ] enable `file R/W`
 * [ ] support `log print`
 * [ ] support `Windows`
-

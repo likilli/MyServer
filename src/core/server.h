@@ -1,6 +1,8 @@
 #pragma once
 
 #include "posix_socket.h"
+#include "ssl_build_flag.h"
+#include "ipv6_build_flag.h"
 
 class Server
 {
@@ -16,11 +18,11 @@ public:
 private:
     bool Init();
 
-#if defined(ENABLE_IPV6)
+#if BUILDFLAG(IPv6)
     bool Init6();
 #endif
 
-#if defined(ENABLE_SSL)
+#if BUILDFLAG(SSL)
     bool InitSSL();
 #endif
 
@@ -34,12 +36,12 @@ private:
     PosixSocket socket_;
     std::uint32_t port_{};
 
-#if defined(ENABLE_IPV6)
+#if BUILDFLAG(IPv6)
     PosixSocket v6_socket_;
     std::uint32_t v6_port_{};
 #endif
 
-#if defined(ENABLE_SSL)
+#if BUILDFLAG(SSL)
     PosixSocket ssl_socket_;
     std::uint32_t ssl_port_{};
 #endif

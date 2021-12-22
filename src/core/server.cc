@@ -52,7 +52,7 @@ bool Server::Init()
 }
 
 
-#if defined(ENABLE_IPV6)
+#if BUILDFLAG(IPv6)
 bool Server::Init6()
 {
     struct sockaddr_in srv_addr{};
@@ -62,7 +62,7 @@ bool Server::Init6()
 #endif
 
 
-#if defined(ENABLE_SSL)
+#if BUILDFLAG(SSL)
 bool Server::InitSSL()
 {
     return true;
@@ -79,11 +79,11 @@ bool Server::Start()
     }
     socket_.StartRead([this](){ DoRead(); });
 
-#if defined(ENABLE_IPV6)
+#if BUILDFLAG(IPv6)
     v6_socket_.StartRead([this]() { DoRead(); });
 #endif
 
-#if defined(ENABLE_SSL)
+#if BUILDFLAG(SSL)
     ssl_socket_.StartRead([this](){ DoRead(); });
 #endif
 
