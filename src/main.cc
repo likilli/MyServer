@@ -4,6 +4,11 @@
 
 int main()
 {
+
+    int *p = new int;
+    *p = 5;
+    return 0;
+
     Server server;
     if (!server.Start())
     {

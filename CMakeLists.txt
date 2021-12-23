@@ -47,9 +47,26 @@ if (ENABLE_IPv6)
     add_definitions(-DENABLE_IPV6)
 endif()
 
+
+# saniziter options
+option(ENABLE_SANITIZER "enable sanitizer" ON)
+if (ENABLE_SANITIZER)
+    message(STATUS "Enable [Sanitizer]")
+    add_compile_options(
+        -fno-omit-frame-pointer
+        -fsanitize=leak
+        -fsanitize=address
+        -fsanitize=undefined
+    )
+endif()
+
 # other settings
 include(deps/deps.cmake)
 
-add_compile_options(-Wall -Wextra -Wreorder)
+add_compile_options(
+    -Wall
+    -Wextra
+    -Wreorder
+)
 
 add_subdirectory(src)
