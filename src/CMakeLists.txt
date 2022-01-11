@@ -6,3 +6,7 @@ add_subdirectory(http)
 
 add_executable(my_server main.cc)
 target_link_libraries(my_server server)
+
+if (ENABLE_SANITIZER)
+    target_link_libraries(my_server asan ubsan)
+endif()
