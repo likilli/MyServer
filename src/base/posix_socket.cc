@@ -96,7 +96,7 @@ void PosixSocket::DoSend()
 #ifdef __APPLE__
         if (errno == EAGAIN)
 #elif __linux__
-            if (errno == EAGAIN || errno == EWOULDBLOCK)
+        if (errno == EAGAIN || errno == EWOULDBLOCK)
 #endif
             return;
         else
