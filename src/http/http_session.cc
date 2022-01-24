@@ -50,6 +50,13 @@ void HttpSession::Send()
 }
 
 
+void HttpSession::Close()
+{
+    shutdown(socket_.GetSocket(), SHUT_RDWR);
+    ::close(socket_.GetSocket());
+}
+
+
 void HttpSession::DoRead()
 {
     char buf[kBufSize]{};
@@ -112,11 +119,4 @@ void HttpSession::DoSend()
         socket_.StopSend();
         Close();
     }
-}
-
-
-void HttpSession::Close()
-{
-    shutdown(socket_.GetSocket(), SHUT_RDWR);
-    ::close(socket_.GetSocket());
 }

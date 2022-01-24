@@ -36,24 +36,6 @@ PosixSocket::~PosixSocket()
 }
 
 
-void PosixSocket::SetSendData(const char *data, size_t data_size)
-{
-    send_buffer_.append(data, data_size);
-}
-
-
-void PosixSocket::SetSendData(const std::string& data)
-{
-    send_buffer_.append(data);
-}
-
-
-std::string PosixSocket::GetRecvData() const
-{
-    return recv_buffer_;
-}
-
-
 void PosixSocket::StartRead(OnReadCallback cb) const
 {
     EventAdd(socket_, READ, std::move(cb));
@@ -75,4 +57,22 @@ void PosixSocket::StartSend(OnSendCallback cb) const
 void PosixSocket::StopSend()
 {
     EventDel(socket_, WRITE);
+}
+
+
+void PosixSocket::SetSendData(const std::string& data)
+{
+    send_buffer_.append(data);
+}
+
+
+void PosixSocket::SetSendData(const char *data, size_t data_size)
+{
+    send_buffer_.append(data, data_size);
+}
+
+
+std::string PosixSocket::GetRecvData() const
+{
+    return recv_buffer_;
 }
