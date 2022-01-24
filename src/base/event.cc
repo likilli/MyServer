@@ -45,9 +45,9 @@ void EventAdd(int socket, int event_type, Callback cb)
  */
 void EventDel(int socket, int event_type)
 {
-    Event e{socket, event_type, nullptr};
-
-    auto iter = std::find(events.begin(), events.end(), e);
+    auto iter = std::find_if(events.begin(), events.end(), [&](Event &e){
+        return e.socket == socket && e.event_type == event_type;
+    });
     if (iter != events.end())
         events.erase(iter);
 }
