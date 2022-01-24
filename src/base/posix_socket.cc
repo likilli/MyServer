@@ -9,9 +9,6 @@
 #include "event.h"
 
 
-constexpr uint32_t kBufSize = 8192;
-
-
 PosixSocket::PosixSocket()
 {
     socket_ = socket(PF_INET, SOCK_STREAM, 0);
@@ -27,11 +24,20 @@ PosixSocket::PosixSocket(Socket fd) : socket_(fd)
 
 PosixSocket::~PosixSocket()
 {
+    Close();    // TODO: Charify here: DO NOT Call any function in destuctor (Effective C++);
+}
+
+
+void PosixSocket::Close()
+{
     if (socket_ != -1)
     {
         shutdown(socket_, SHUT_RDWR);
-        ::close(socket_);
+        EventDel(socket_, READ);
+        EventDel(socket_, WRITE);
+        close(socket_);
         socket_ = -1;
+        working_ = false;
     }
 }
 

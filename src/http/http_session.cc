@@ -17,24 +17,22 @@
 
 constexpr int kBufSize = 8192;
 const char* kHeader = "HTTP/1.1 200 OK\r\n"
-             "Connection: close\r\n"
-             "Content-Type: text/html; charset=UTF-8\r\n"
-             "Content-Length: 85\r\n"
-             "Server:elitk/Manjaro 20.0 - Lysia\r\n"
-             "\r\n"
-             "<!DOCTYPE html><html><head> Welcom, Kai</head><h1> aaa, elitk's Home page</h1></html>";
+                      "Connection: close\r\n"
+                      "Content-Type: text/html; charset=UTF-8\r\n"
+                      "Content-Length: 85\r\n"
+                      "Server:elitk/Manjaro 20.0 - Lysia\r\n"
+                      "\r\n"
+                      "<!DOCTYPE html><html><head> Welcom, Kai</head><h1> aaa, elitk's Home page</h1></html>";
 
 
 HttpSession::HttpSession(Socket socket) : socket_(socket)
 {
-
 }
 
 
 HttpSession::~HttpSession()
 {
-    if (!http_header_.empty())
-        http_header_.clear();
+    Close();
 }
 
 
@@ -54,8 +52,14 @@ void HttpSession::Send()
 
 void HttpSession::Close()
 {
-    shutdown(socket_.GetSocket(), SHUT_RDWR);
-    ::close(socket_.GetSocket());
+    if (!http_header_.empty())
+        http_header_.clear();
+
+    if (!recv_buffer_.empty())
+        recv_buffer_.clear();
+
+    if (socket_.Working())
+        socket_.Close();
 }
 
 

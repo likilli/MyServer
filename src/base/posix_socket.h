@@ -36,14 +36,19 @@ public:
     void SetOnDoneCallback(OnDoneCallback cb);
     void SetOnErrorCallback(OnErrorCallback cb);
 
+    bool Working() const { return working_; }
     Socket GetSocket() const { return socket_; }
+
     std::string GetRecvData() const;
+    void Close();
 
 private:
     void DoSend();
 
 private:
     Socket socket_{};
+
+    bool working_{true};
 
     std::size_t sent_len_{};
     std::size_t recv_len_{};
