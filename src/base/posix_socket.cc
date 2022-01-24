@@ -48,31 +48,59 @@ void PosixSocket::StopRead()
 }
 
 
-void PosixSocket::StartSend(OnSendCallback cb) const
-{
-    EventAdd(socket_, WRITE, std::move(cb));
-}
-
-
-void PosixSocket::StopSend()
-{
-    EventDel(socket_, WRITE);
-}
-
-
 void PosixSocket::SetSendData(const std::string& data)
 {
     send_buffer_.append(data);
+    EventAdd(socket_, WRITE, [&](){ DoSend(); });
 }
 
 
 void PosixSocket::SetSendData(const char *data, size_t data_size)
 {
     send_buffer_.append(data, data_size);
+    EventAdd(socket_, WRITE, [&](){ DoSend(); });
+}
+
+
+void PosixSocket::SetOnDoneCallback(OnDoneCallback cb)
+{
+    assert(cb != nullptr);
+    on_done_ = std::move(cb);
+}
+
+
+void PosixSocket::SetOnErrorCallback(OnErrorCallback cb)
+{
+    assert(cb != nullptr);
+    on_error_ = std::move(cb);
 }
 
 
 std::string PosixSocket::GetRecvData() const
 {
     return recv_buffer_;
+}
+
+
+void PosixSocket::DoSend()
+{
+    ssize_t send_len = send(socket_, send_buffer_.c_str() + sent_len_, send_buffer_.length(), 0);
+    if (send_len == -1)
+    {
+#ifdef __APPLE__
+        if (errno == EAGAIN)
+#elif __linux__
+            if (errno == EAGAIN || errno == EWOULDBLOCK)
+#endif
+            return;
+        else
+            on_error_(errno);
+    }
+
+    sent_len_ += send_len;
+    if (sent_len_ == send_buffer_.length())     //  TODO: Optimize here when send buffer is very large (huge memory use)
+    {
+        EventDel(socket_, WRITE);
+        on_done_();
+    }
 }

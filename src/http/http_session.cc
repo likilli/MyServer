@@ -46,7 +46,9 @@ void HttpSession::Start()
 
 void HttpSession::Send()
 {
-    socket_.StartSend([this](){ DoSend(); });
+    socket_.SetOnDoneCallback([&](){ OnSendDone(); });
+    socket_.SetOnErrorCallback([&](int err_no){ OnSendError(err_no); });
+    socket_.SetSendData(kHeader, strlen(kHeader));
 }
 
 
@@ -66,7 +68,7 @@ void HttpSession::DoRead()
 #ifdef __APPLE__
         if (errno == EAGAIN)
 #elif __linux__
-        if (errno == EAGAIN || errno == EWOULDBLOCK)
+            if (errno == EAGAIN || errno == EWOULDBLOCK)
 #endif
         {
             socket_.StartRead([this](){ DoRead(); });
@@ -94,29 +96,14 @@ void HttpSession::DoRead()
 }
 
 
-void HttpSession::DoSend()
+void HttpSession::OnSendDone()
 {
-    ssize_t send_len = send(socket_.GetSocket(), kHeader + sent_len_, strlen(kHeader), 0);
-    if (send_len == -1)
-    {
-#ifdef __APPLE__
-        if (errno == EAGAIN)
-#elif __linux__
-        if (errno == EAGAIN || errno == EWOULDBLOCK)
-#endif
-        {
-            socket_.StartSend([this](){ DoSend(); });
-            return;
-        }
-        else
-        {
-            std::cerr << "[ERROR]: errno: " << errno << " : " << strerror(errno) << std::endl;
-        }
-    }
-    sent_len_ += send_len;
-    if (sent_len_ == static_cast<ssize_t>(strlen(kHeader)))
-    {
-        socket_.StopSend();
-        Close();
-    }
+    Close();
+}
+
+
+void HttpSession::OnSendError(int err_no)
+{
+    std::cerr << "[ERROR]: " << __FUNCTION__  << ", errno: " << err_no << " : " << strerror(err_no) << std::endl;
+    Close();
 }
