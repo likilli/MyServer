@@ -5,7 +5,6 @@
  */
 
 
-#include <unistd.h>
 #include <sys/socket.h>
 #include <cerrno>
 #include <cstring>
@@ -44,9 +43,10 @@ void HttpSession::Start()
 
 void HttpSession::Send()
 {
+    socket_.SetSendData(kHeader, strlen(kHeader));
     socket_.SetOnDoneCallback([&](){ OnSendDone(); });
     socket_.SetOnErrorCallback([&](int err_no){ OnSendError(err_no); });
-    socket_.SetSendData(kHeader, strlen(kHeader));
+    socket_.Send();
 }
 
 
@@ -58,8 +58,7 @@ void HttpSession::Close()
     if (!recv_buffer_.empty())
         recv_buffer_.clear();
 
-    if (socket_.Working())
-        socket_.Close();
+    socket_.Close();
 }
 
 

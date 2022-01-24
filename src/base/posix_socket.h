@@ -30,13 +30,13 @@ public:
     void StartRead(OnReadCallback cb) const;
     void StopRead();
 
+    void Send();
     void SetSendData(const std::string& data);
     void SetSendData(const char* data, size_t data_size);
 
     void SetOnDoneCallback(OnDoneCallback cb);
     void SetOnErrorCallback(OnErrorCallback cb);
 
-    bool Working() const { return working_; }
     Socket GetSocket() const { return socket_; }
 
     std::string GetRecvData() const;
@@ -47,8 +47,6 @@ private:
 
 private:
     Socket socket_{};
-
-    bool working_{true};
 
     std::size_t sent_len_{};
     std::size_t recv_len_{};

@@ -38,7 +38,6 @@ void PosixSocket::Close()
         EventDel(socket_, WRITE);
         close(socket_);
         socket_ = -1;
-        working_ = false;
     }
 }
 
@@ -55,17 +54,21 @@ void PosixSocket::StopRead()
 }
 
 
+void PosixSocket::Send()
+{
+    EventAdd(socket_, WRITE, [&](){ DoSend(); });
+}
+
+
 void PosixSocket::SetSendData(const std::string& data)
 {
     send_buffer_.append(data);
-    EventAdd(socket_, WRITE, [&](){ DoSend(); });
 }
 
 
 void PosixSocket::SetSendData(const char *data, size_t data_size)
 {
     send_buffer_.append(data, data_size);
-    EventAdd(socket_, WRITE, [&](){ DoSend(); });
 }
 
 
