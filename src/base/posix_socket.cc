@@ -2,9 +2,10 @@
 
 #include <unistd.h>
 #include <sys/socket.h>
-#include <cerrno>
 #include <utility>
 #include <fcntl.h>
+#include <cerrno>
+#include <cassert>
 
 #include "event.h"
 
