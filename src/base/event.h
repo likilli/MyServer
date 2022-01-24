@@ -20,8 +20,9 @@ struct Event
     }
 };
 
-void EventLoopRun();
+
 void EventInit(Socket socket, int event_type, Callback callback);
 void EventAdd(Socket socket, int event_type, Callback cb);
 void EventDel(Socket socket, int event_type);
+void EventLoopRun();
 int GetEventQuantity();

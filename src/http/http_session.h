@@ -41,14 +41,13 @@ public:
 
 private:
     void DoRead();
-    void DoSend();
+    void OnSendDone();
+    void OnSendError(int err_no);
 
 private:
     PosixSocket socket_{};
 
-    ssize_t sent_len_{};
     std::string recv_buffer_{};
-    std::string send_buffer_{};
 
     Status status_{Status::kInit};
     std::map<std::string, std::string> http_header_{};

@@ -17,24 +17,22 @@
 
 constexpr int kBufSize = 8192;
 const char* kHeader = "HTTP/1.1 200 OK\r\n"
-             "Connection: close\r\n"
-             "Content-Type: text/html; charset=UTF-8\r\n"
-             "Content-Length: 85\r\n"
-             "Server:elitk/Manjaro 20.0 - Lysia\r\n"
-             "\r\n"
-             "<!DOCTYPE html><html><head> Welcom, Kai</head><h1> aaa, elitk's Home page</h1></html>";
+                      "Connection: close\r\n"
+                      "Content-Type: text/html; charset=UTF-8\r\n"
+                      "Content-Length: 85\r\n"
+                      "Server:elitk/Manjaro 20.0 - Lysia\r\n"
+                      "\r\n"
+                      "<!DOCTYPE html><html><head> Welcom, Kai</head><h1> aaa, elitk's Home page</h1></html>";
 
 
 HttpSession::HttpSession(Socket socket) : socket_(socket)
 {
-
 }
 
 
 HttpSession::~HttpSession()
 {
-    if (!http_header_.empty())
-        http_header_.clear();
+    Close();
 }
 
 
@@ -46,7 +44,22 @@ void HttpSession::Start()
 
 void HttpSession::Send()
 {
-    socket_.StartSend([this](){ DoSend(); });
+    socket_.SetOnDoneCallback([&](){ OnSendDone(); });
+    socket_.SetOnErrorCallback([&](int err_no){ OnSendError(err_no); });
+    socket_.SetSendData(kHeader, strlen(kHeader));
+}
+
+
+void HttpSession::Close()
+{
+    if (!http_header_.empty())
+        http_header_.clear();
+
+    if (!recv_buffer_.empty())
+        recv_buffer_.clear();
+
+    if (socket_.Working())
+        socket_.Close();
 }
 
 
@@ -87,36 +100,14 @@ void HttpSession::DoRead()
 }
 
 
-void HttpSession::DoSend()
+void HttpSession::OnSendDone()
 {
-    ssize_t send_len = send(socket_.GetSocket(), kHeader + sent_len_, strlen(kHeader), 0);
-    if (send_len == -1)
-    {
-#ifdef __APPLE__
-        if (errno == EAGAIN)
-#elif __linux__
-        if (errno == EAGAIN || errno == EWOULDBLOCK)
-#endif
-        {
-            socket_.StartSend([this](){ DoSend(); });
-            return;
-        }
-        else
-        {
-            std::cerr << "[ERROR]: errno: " << errno << " : " << strerror(errno) << std::endl;
-        }
-    }
-    sent_len_ += send_len;
-    if (sent_len_ == static_cast<ssize_t>(strlen(kHeader)))
-    {
-        socket_.StopSend();
-        Close();
-    }
+    Close();
 }
 
 
-void HttpSession::Close()
+void HttpSession::OnSendError(int err_no)
 {
-    shutdown(socket_.GetSocket(), SHUT_RDWR);
-    ::close(socket_.GetSocket());
+    std::cerr << "[ERROR]: " << __FUNCTION__  << ", errno: " << err_no << " : " << strerror(err_no) << std::endl;
+    Close();
 }

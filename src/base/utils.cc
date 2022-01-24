@@ -7,12 +7,6 @@
 const char CRLF[] = "\r\n\r\n";
 
 
-void Utils::Log(int level, const std::string& info)
-{
-    std::cout << "[LOG]: " << info << std::endl;
-}
-
-
 bool StringUtils::StartWith(const char* src, const char* needle)
 {
     if (src == nullptr || needle == nullptr)
@@ -122,4 +116,10 @@ std::map<std::string, std::string> HttpUtils::ParseHttpHeaderFrom(const char* bu
         addr = row_end_pos + 2;
     }
     return http_header;
+}
+
+
+void Utils::Log(int level, const std::string& info)
+{
+    std::cout << "[LOG]: " << info << std::endl;
 }

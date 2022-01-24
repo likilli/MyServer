@@ -49,7 +49,7 @@ endif()
 
 
 # saniziter options
-option(ENABLE_SANITIZER "enable sanitizer" ON)
+option(ENABLE_SANITIZER "enable sanitizer" OFF)
 if (ENABLE_SANITIZER)
     message(STATUS "Enable [Sanitizer]")
     add_compile_options(
