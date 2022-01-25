@@ -109,10 +109,5 @@ bool Server::Start()
 
 void Server::Close()
 {
-    if (socket_.GetSocket() > 0)
-    {
-        socket_.StopRead();
-        shutdown(socket_.GetSocket(), SHUT_RDWR);
-        ::close(socket_.GetSocket());
-    }
+    socket_.Close();
 }
