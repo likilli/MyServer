@@ -43,7 +43,7 @@ void HttpSession::Start()
 void HttpSession::Read()
 {
     socket_.SetOnDataCallback([&](std::string& data){ DoRead(data); });
-    socket_.SetOnErrorCallback([&](int err_no){ OnSendError(err_no); });
+    socket_.SetOnErrorCallback([&](int err_no){ OnError(err_no); });
     socket_.StartRead();
 }
 
@@ -52,7 +52,7 @@ void HttpSession::Send()
 {
     socket_.SetSendData(kHeader, strlen(kHeader));
     socket_.SetOnDoneCallback([&](){ OnSendDone(); });
-    socket_.SetOnErrorCallback([&](int err_no){ OnSendError(err_no); });
+    socket_.SetOnErrorCallback([&](int err_no){ OnError(err_no); });
     socket_.StartSend();
 }
 
@@ -96,8 +96,19 @@ void HttpSession::OnSendDone()
 }
 
 
-void HttpSession::OnSendError(int err_no)
+void HttpSession::OnError(int err_no)
 {
     std::cerr << "[ERROR]: " << __FUNCTION__  << ", errno: " << err_no << " : " << strerror(err_no) << std::endl;
+    switch (status_)
+    {
+        case Status::kInit:
+            break;
+        case Status::kRecvRequest:
+            socket_.StopRead();
+        case Status::kSendResponseHeader:
+        case Status::kSendResponseData:
+            socket_.StopSend();
+            break;
+    }
     Close();
 }

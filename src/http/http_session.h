@@ -43,7 +43,7 @@ public:
 private:
     void DoRead(std::string& data);
     void OnSendDone();
-    void OnSendError(int err_no);
+    void OnError(int err_no);
 
 private:
     PosixSocket socket_{};
