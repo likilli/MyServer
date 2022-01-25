@@ -53,4 +53,3 @@ private:
     Status status_{Status::kInit};
     std::map<std::string, std::string> http_header_{};
 };
-

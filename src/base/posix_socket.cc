@@ -145,7 +145,6 @@ void PosixSocket::DoRead()
             return;
         else
             on_error_(errno);
-
     }
     if (recv_len > 0)
     {

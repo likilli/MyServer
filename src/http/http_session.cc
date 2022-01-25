@@ -83,7 +83,6 @@ void HttpSession::DoRead(std::string& data)
         status_ = Status::kSendResponseHeader;
         Send();
     }
-
 }
 
 
