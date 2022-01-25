@@ -46,7 +46,7 @@ void HttpSession::Send()
     socket_.SetSendData(kHeader, strlen(kHeader));
     socket_.SetOnDoneCallback([&](){ OnSendDone(); });
     socket_.SetOnErrorCallback([&](int err_no){ OnSendError(err_no); });
-    socket_.Send();
+    socket_.StartSend();
 }
 
 
@@ -101,6 +101,7 @@ void HttpSession::DoRead()
 
 void HttpSession::OnSendDone()
 {
+    socket_.StopSend();
     Close();
 }
 
