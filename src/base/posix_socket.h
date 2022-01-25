@@ -18,6 +18,7 @@ class PosixSocket
 {
 public:
     using OnReadCallback = std::function<void()>;
+    using OnDataCallback = std::function<void(std::string& data)>;
     using OnDoneCallback = std::function<void()>;
     using OnErrorCallback = std::function<void(int)>;
 
@@ -27,8 +28,10 @@ public:
     ~PosixSocket();
 
 public:
-    void StartRead(OnReadCallback cb) const;
-    void StopRead();
+    void StartRead();
+    void StopRead() const;
+    void SetOnReadCallback(OnReadCallback cb);
+    void SetOnDataCallback(OnDataCallback cb);
 
     void StartSend();
     void StopSend() const;
@@ -45,6 +48,7 @@ public:
 
 private:
     void DoSend();
+    void DoRead();
 
 private:
     Socket socket_{};
@@ -53,6 +57,9 @@ private:
     std::size_t recv_len_{};
     std::string send_buffer_{};
     std::string recv_buffer_{};
+
+    OnReadCallback on_read_{};
+    OnDataCallback on_data_{};
 
     OnDoneCallback on_done_{};
     OnErrorCallback on_error_{};

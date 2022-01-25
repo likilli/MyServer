@@ -36,11 +36,12 @@ public:
 
 public:
     void Start();
+    void Read();
     void Send();
     void Close();
 
 private:
-    void DoRead();
+    void DoRead(std::string& data);
     void OnSendDone();
     void OnSendError(int err_no);
 

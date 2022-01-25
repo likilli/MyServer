@@ -14,7 +14,6 @@
 #include "utils.h"
 
 
-constexpr int kBufSize = 8192;
 const char* kHeader = "HTTP/1.1 200 OK\r\n"
                       "Connection: close\r\n"
                       "Content-Type: text/html; charset=UTF-8\r\n"
@@ -37,7 +36,15 @@ HttpSession::~HttpSession()
 
 void HttpSession::Start()
 {
-    DoRead();
+    Read();
+}
+
+
+void HttpSession::Read()
+{
+    socket_.SetOnDataCallback([&](std::string& data){ DoRead(data); });
+    socket_.SetOnErrorCallback([&](int err_no){ OnSendError(err_no); });
+    socket_.StartRead();
 }
 
 
@@ -62,29 +69,12 @@ void HttpSession::Close()
 }
 
 
-void HttpSession::DoRead()
+void HttpSession::DoRead(std::string& data)
 {
-    char buf[kBufSize]{};
-    ssize_t recv_len = recv(socket_.GetSocket(), buf, kBufSize - 1, 0);
-    if (recv_len == -1)
-    {
-#ifdef __APPLE__
-        if (errno == EAGAIN)
-#elif __linux__
-        if (errno == EAGAIN || errno == EWOULDBLOCK)
-#endif
-        {
-            socket_.StartRead([this](){ DoRead(); });
-            return;
-        }
-        else
-        {
-            std::cerr << "[ERROR]: receive data error: " << errno << " : " << strerror(errno) << std::endl;
-            Close();
-        }
-    }
+    recv_buffer_.append(data);
+    data.clear(); // TODO: Optimize here
 
-    http_header_ = HttpUtils::ParseHttpHeaderFrom(buf, recv_len);
+    http_header_ = HttpUtils::ParseHttpHeaderFrom(recv_buffer_.c_str(), recv_buffer_.length());
     if (!http_header_.empty())
     {
         socket_.StopRead();
