@@ -36,13 +36,14 @@ public:
 
 public:
     void Start();
+    void Read();
     void Send();
     void Close();
 
 private:
-    void DoRead();
+    void DoRead(std::string& data);
     void OnSendDone();
-    void OnSendError(int err_no);
+    void OnError(int err_no);
 
 private:
     PosixSocket socket_{};
@@ -52,4 +53,3 @@ private:
     Status status_{Status::kInit};
     std::map<std::string, std::string> http_header_{};
 };
-

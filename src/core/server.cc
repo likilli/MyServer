@@ -90,7 +90,8 @@ bool Server::Start()
         std::cerr << "[ERROR]: Init failed" << std::endl;
         return false;
     }
-    socket_.StartRead([this](){ DoRead(); });
+    socket_.SetOnReadCallback([&](){ DoRead(); });
+    socket_.StartRead();
 
 #if BUILDFLAG(IPv6)
     v6_socket_.StartRead([this]() { DoRead(); });
@@ -108,10 +109,5 @@ bool Server::Start()
 
 void Server::Close()
 {
-    if (socket_.GetSocket() > 0)
-    {
-        socket_.StopRead();
-        shutdown(socket_.GetSocket(), SHUT_RDWR);
-        ::close(socket_.GetSocket());
-    }
+    socket_.Close();
 }

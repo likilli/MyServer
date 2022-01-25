@@ -5,8 +5,6 @@
  */
 
 
-#include <sys/socket.h>
-#include <cerrno>
 #include <cstring>
 
 #include <iostream>
@@ -14,7 +12,6 @@
 #include "utils.h"
 
 
-constexpr int kBufSize = 8192;
 const char* kHeader = "HTTP/1.1 200 OK\r\n"
                       "Connection: close\r\n"
                       "Content-Type: text/html; charset=UTF-8\r\n"
@@ -37,7 +34,15 @@ HttpSession::~HttpSession()
 
 void HttpSession::Start()
 {
-    DoRead();
+    Read();
+}
+
+
+void HttpSession::Read()
+{
+    socket_.SetOnDataCallback([&](std::string& data){ DoRead(data); });
+    socket_.SetOnErrorCallback([&](int err_no){ OnError(err_no); });
+    socket_.StartRead();
 }
 
 
@@ -45,7 +50,7 @@ void HttpSession::Send()
 {
     socket_.SetSendData(kHeader, strlen(kHeader));
     socket_.SetOnDoneCallback([&](){ OnSendDone(); });
-    socket_.SetOnErrorCallback([&](int err_no){ OnSendError(err_no); });
+    socket_.SetOnErrorCallback([&](int err_no){ OnError(err_no); });
     socket_.StartSend();
 }
 
@@ -62,29 +67,12 @@ void HttpSession::Close()
 }
 
 
-void HttpSession::DoRead()
+void HttpSession::DoRead(std::string& data)
 {
-    char buf[kBufSize]{};
-    ssize_t recv_len = recv(socket_.GetSocket(), buf, kBufSize - 1, 0);
-    if (recv_len == -1)
-    {
-#ifdef __APPLE__
-        if (errno == EAGAIN)
-#elif __linux__
-        if (errno == EAGAIN || errno == EWOULDBLOCK)
-#endif
-        {
-            socket_.StartRead([this](){ DoRead(); });
-            return;
-        }
-        else
-        {
-            std::cerr << "[ERROR]: receive data error: " << errno << " : " << strerror(errno) << std::endl;
-            Close();
-        }
-    }
+    recv_buffer_.append(data);
+    data.clear(); // TODO: Optimize here
 
-    http_header_ = HttpUtils::ParseHttpHeaderFrom(buf, recv_len);
+    http_header_ = HttpUtils::ParseHttpHeaderFrom(recv_buffer_.c_str(), recv_buffer_.length());
     if (!http_header_.empty())
     {
         socket_.StopRead();
@@ -95,7 +83,6 @@ void HttpSession::DoRead()
         status_ = Status::kSendResponseHeader;
         Send();
     }
-
 }
 
 
@@ -106,8 +93,19 @@ void HttpSession::OnSendDone()
 }
 
 
-void HttpSession::OnSendError(int err_no)
+void HttpSession::OnError(int err_no)
 {
     std::cerr << "[ERROR]: " << __FUNCTION__  << ", errno: " << err_no << " : " << strerror(err_no) << std::endl;
+    switch (status_)
+    {
+        case Status::kInit:
+            break;
+        case Status::kRecvRequest:
+            socket_.StopRead();
+        case Status::kSendResponseHeader:
+        case Status::kSendResponseData:
+            socket_.StopSend();
+            break;
+    }
     Close();
 }
