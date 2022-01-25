@@ -10,7 +10,7 @@
 #endif
 
 
-constexpr int READ = 0;
+constexpr int READ  = 0;
 constexpr int WRITE = 1;
 
 
@@ -30,7 +30,8 @@ public:
     void StartRead(OnReadCallback cb) const;
     void StopRead();
 
-    void Send();
+    void StartSend();
+    void StopSend() const;
     void SetSendData(const std::string& data);
     void SetSendData(const char* data, size_t data_size);
 

@@ -54,9 +54,15 @@ void PosixSocket::StopRead()
 }
 
 
-void PosixSocket::Send()
+void PosixSocket::StartSend()
 {
     EventAdd(socket_, WRITE, [&](){ DoSend(); });
+}
+
+
+void PosixSocket::StopSend() const
+{
+    EventDel(socket_, WRITE);
 }
 
 
@@ -109,8 +115,5 @@ void PosixSocket::DoSend()
 
     sent_len_ += send_len;
     if (sent_len_ == send_buffer_.length())     //  TODO: Optimize here when send buffer is very large (huge memory use)
-    {
-        EventDel(socket_, WRITE);
         on_done_();
-    }
 }
