@@ -110,12 +110,6 @@ void PosixSocket::SetOnErrorCallback(OnErrorCallback cb)
 }
 
 
-std::string PosixSocket::GetRecvData() const
-{
-    return recv_buffer_;
-}
-
-
 void PosixSocket::DoSend()
 {
     ssize_t send_len = send(socket_, send_buffer_.c_str() + sent_len_, send_buffer_.length(), 0);

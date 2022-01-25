@@ -41,10 +41,9 @@ public:
     void SetOnDoneCallback(OnDoneCallback cb);
     void SetOnErrorCallback(OnErrorCallback cb);
 
-    Socket GetSocket() const { return socket_; }
-
-    std::string GetRecvData() const;
     void Close();
+
+    Socket GetSocket() const { return socket_; }
 
 private:
     void DoSend();
