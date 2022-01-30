@@ -52,6 +52,19 @@ bool Server::Init()
 }
 
 
+void Server::DoRead()
+{
+    struct sockaddr_in c_adr{};
+    socklen_t c_adr_len = sizeof(c_adr);
+
+    Socket cfd = accept(socket_.GetSocket(), (struct sockaddr*)&c_adr, &c_adr_len);
+    std::cout << "\n[LOG]: Http Request from: " << inet_ntoa(c_adr.sin_addr) << std::endl;
+
+    auto http_session = new HttpSession(cfd);
+    http_session->Start();
+}
+
+
 #if BUILDFLAG(IPv6)
 bool Server::Init6()
 {
@@ -68,19 +81,6 @@ bool Server::InitSSL()
     return true;
 }
 #endif
-
-
-void Server::DoRead()
-{
-    struct sockaddr_in c_adr{};
-    socklen_t c_adr_len = sizeof(c_adr);
-
-    int cfd = accept(socket_.GetSocket(), (struct sockaddr*)&c_adr, &c_adr_len);
-    std::cout << "\n[LOG]: Http Request from: " << inet_ntoa(c_adr.sin_addr) << std::endl;
-
-    auto http_session = new HttpSession(cfd);
-    http_session->Start();
-}
 
 
 bool Server::Start()

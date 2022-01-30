@@ -17,16 +17,16 @@ public:
 
 private:
     bool Init();
+    void DoRead();
 
 #if BUILDFLAG(IPv6)
     bool Init6();
+    void DoRead6();
 #endif
 
 #if BUILDFLAG(SSL)
     bool InitSSL();
 #endif
-
-    void DoRead();
 
 public:
     bool Start();

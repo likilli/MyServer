@@ -31,7 +31,7 @@ public:
 
     HttpSession(HttpSession&&) = delete;
     HttpSession(const HttpSession&) = delete;
-    HttpSession& operator=(HttpSession &&) = delete;
+    HttpSession& operator=(HttpSession&&) = delete;
     HttpSession& operator=(const HttpSession&) = delete;
 
 public:
