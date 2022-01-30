@@ -26,12 +26,12 @@ enum class Status : int
 class HttpSession
 {
 public:
-    explicit HttpSession(Socket socket);
+    explicit HttpSession(PosixSocket socket);
     ~HttpSession();
 
     HttpSession(HttpSession&&) = delete;
     HttpSession(const HttpSession&) = delete;
-    HttpSession& operator=(HttpSession &&) = delete;
+    HttpSession& operator=(HttpSession&&) = delete;
     HttpSession& operator=(const HttpSession&) = delete;
 
 public:

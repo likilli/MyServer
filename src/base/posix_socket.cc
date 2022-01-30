@@ -13,9 +13,13 @@
 constexpr int kBufSize = 8192;
 
 
-PosixSocket::PosixSocket()
+PosixSocket::PosixSocket(bool IPv6)
 {
-    socket_ = socket(PF_INET, SOCK_STREAM, 0);
+    if (!IPv6)
+        socket_ = socket(PF_INET, SOCK_STREAM, 0);
+    else
+        socket_ = socket(PF_INET6, SOCK_STREAM, 0);
+
     fcntl(socket_, F_SETFL, fcntl(socket_, F_GETFL) | O_NONBLOCK);
 }
 
@@ -29,6 +33,27 @@ PosixSocket::PosixSocket(Socket fd) : socket_(fd)
 PosixSocket::~PosixSocket()
 {
     Close();    // TODO: Charify here: DO NOT Call any function in destuctor (Effective C++);
+}
+
+
+PosixSocket::PosixSocket(PosixSocket &&ps) noexcept
+{
+    socket_ = ps.socket_;
+
+    sent_len_ = ps.sent_len_;
+    recv_len_ = ps.recv_len_;
+    send_buffer_ = std::move(ps.send_buffer_);
+    recv_buffer_ = std::move(ps.recv_buffer_);
+
+    on_read_  = std::move(ps.on_read_);
+    on_data_  = std::move(ps.on_data_);
+    on_done_  = std::move(ps.on_done_);
+    on_error_ = std::move(ps.on_error_);
+
+
+    ps.socket_ = -1;
+    ps.sent_len_ = -1;
+    ps.recv_len_ = -1;
 }
 
 
