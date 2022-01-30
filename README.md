@@ -6,6 +6,7 @@
 * [x] based by `select`
 * [x] support `gtest`
 * [x] Sanitizers(Linux)
+* [x] Enable `IPv6`
 
 ## Doing
 * [x] Refactor, Optimize (Always and forever :)
@@ -15,7 +16,6 @@
 * [ ] `symbol visibility`
 * [ ] based by `epoll`
 * [ ] based by `libevent`
-* [ ] enable `IPv6`
 * [ ] enable `SSL`
 * [ ] enable `file R/W`
 * [ ] support `log print`
