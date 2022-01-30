@@ -19,17 +19,17 @@ option(USE_EPOLL "use epoll" OFF)
 option(USE_LIBEVENT "use libevent" OFF)
 
 if (USE_SELECT)
-    message(STATUS "Using [Select] as Event Implementation")
+    message(STATUS "[Select]: Enabled")
     add_definitions(-DUSE_SELECT)
 endif ()
 
 if (USE_EPOLL)
-    message(STATUS "use epoll as event implementation")
+    message(STATUS "[Epoll]: Enabled")
     add_definitions(-DUSE_EPOLL)
 endif()
 
 if (USE_LIBEVENT)
-    message(STATUS "use libevent as event implementation")
+    message(STATUS "[Libevent]: Enabled")
     add_definitions(-DUSE_LIBEVENT)
 endif()
 
@@ -38,12 +38,12 @@ option(ENABLE_SSL "enable SSL" OFF)
 option(ENABLE_IPv6 "enable IPv6" ON)
 
 if (ENABLE_SSL)
-    message(STATUS "Enable [SSL]")
+    message(STATUS "[SSL]: Enabled")
     add_definitions(-DENABLE_SSL)
 endif()
 
 if (ENABLE_IPv6)
-    message(STATUS "Enable [IPv6]")
+    message(STATUS "[IPv6] Enabled")
     add_definitions(-DENABLE_IPv6)
 endif()
 

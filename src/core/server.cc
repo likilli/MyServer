@@ -55,7 +55,7 @@ void Server::DoRead()
     Socket cfd = accept(socket_.GetSocket(), (struct sockaddr*)&c_adr, &c_adr_len);
     std::cout << "\n[LOG]: Http Request from: " << inet_ntoa(c_adr.sin_addr) << std::endl;
 
-    auto http_session = new HttpSession(cfd);
+    auto http_session = new HttpSession(PosixSocket(cfd));
     http_session->Start();
 }
 

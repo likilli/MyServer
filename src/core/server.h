@@ -34,7 +34,6 @@ public:
 
 private:
     PosixSocket socket_;
-    std::uint32_t port_{};
 
 #if BUILDFLAG(IPv6)
     PosixSocket v6_socket_{true};
