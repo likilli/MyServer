@@ -21,9 +21,8 @@ const char* kHeader = "HTTP/1.1 200 OK\r\n"
                       "<!DOCTYPE html><html><head> Welcom, Kai</head><h1> aaa, elitk's Home page</h1></html>";
 
 
-HttpSession::HttpSession(Socket socket) : socket_(socket)
-{
-}
+HttpSession::HttpSession(PosixSocket socket) : socket_(std::move(socket))
+{}
 
 
 HttpSession::~HttpSession()

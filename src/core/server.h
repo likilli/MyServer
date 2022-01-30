@@ -37,12 +37,14 @@ private:
     std::uint32_t port_{};
 
 #if BUILDFLAG(IPv6)
-    PosixSocket v6_socket_;
-    std::uint32_t v6_port_{};
+    PosixSocket v6_socket_{true};
 #endif
 
 #if BUILDFLAG(SSL)
     PosixSocket ssl_socket_;
-    std::uint32_t ssl_port_{};
+#endif
+
+#if BUILDFLAG(IPv6) && BUILDFLAG(SSL)
+    PosixSocket v6_ssl_socket_{true};
 #endif
 };

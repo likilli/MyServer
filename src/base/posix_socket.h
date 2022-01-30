@@ -23,9 +23,14 @@ public:
     using OnErrorCallback = std::function<void(int)>;
 
 public:
-    PosixSocket();
+    explicit PosixSocket(bool IPv6 = false);
     explicit PosixSocket(Socket socket);
     ~PosixSocket();
+
+    PosixSocket(PosixSocket&&) noexcept;
+//    PosixSocket(const PosixSocket&);
+//    PosixSocket& operator=(PosixSocket&&) noexcept;
+//    PosixSocket& operator=(const PosixSocket&);
 
 public:
     void StartRead();

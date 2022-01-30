@@ -35,7 +35,7 @@ endif()
 
 # connection options
 option(ENABLE_SSL "enable SSL" OFF)
-option(ENABLE_IPv6 "enable IPv6" OFF)
+option(ENABLE_IPv6 "enable IPv6" ON)
 
 if (ENABLE_SSL)
     message(STATUS "Enable [SSL]")
@@ -44,7 +44,7 @@ endif()
 
 if (ENABLE_IPv6)
     message(STATUS "Enable [IPv6]")
-    add_definitions(-DENABLE_IPV6)
+    add_definitions(-DENABLE_IPv6)
 endif()
 
 
@@ -67,6 +67,7 @@ add_compile_options(
     -Wall
     -Wextra
     -Wreorder
+    -Werror
 )
 
 add_subdirectory(src)

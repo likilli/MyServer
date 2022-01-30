@@ -53,7 +53,7 @@ void EventDel(int socket, int event_type)
 }
 
 
-void EventLoopRun()
+void StartEventLoop()
 {
     if (isLoopRunning)
         return;

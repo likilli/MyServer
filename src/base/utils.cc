@@ -119,7 +119,7 @@ std::map<std::string, std::string> HttpUtils::ParseHttpHeaderFrom(const char* bu
 }
 
 
-void Utils::Log(int level, const std::string& info)
+void Utils::Log(int /*level*/, const std::string& info)
 {
     std::cout << "[LOG]: " << info << std::endl;
 }
