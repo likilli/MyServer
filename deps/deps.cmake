@@ -1,7 +1,9 @@
 if (APPLE)
     set(PLATFORM APPLE)
+	message(STATUS "[Platform]: Apple")
 elseif (UNIX)
     set(PLATFORM Linux)
+	message(STATUS "[Platfrom]: Linux")
 endif()
 
 # gtest
