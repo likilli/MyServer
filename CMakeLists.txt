@@ -1,14 +1,13 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.20 FATAL_ERROR)
 
-project(MyServer)
+project(MyEcho LANGUAGES C CXX)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
 
-set(CMAKE_INSTALL_NAME_DIR ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION OFF)
@@ -68,6 +67,7 @@ add_compile_options(
     -Wextra
     -Wreorder
     -Werror
+    -fno-omit-frame-pointer
 )
 
 add_subdirectory(src)
