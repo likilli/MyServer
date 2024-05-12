@@ -5,6 +5,7 @@ include_directories(flags)
 add_library(base STATIC "")
 target_sources(base PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/base/event.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/base/logging.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/base/posix_socket.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/base/utils.cc
 )
